@@ -1,0 +1,38 @@
+
+.mat-form-field {
+    display: flex;
+    flex-direction: column;
+}
+
+h1 {
+    text-align: center;
+}
+
+a {
+    text-decoration: none;
+}
+
+.login-form {
+    padding: 48px 40px 36px;
+    line-height: 2;
+}
+
+.horizontal-center-div {
+    border-width: 1px;
+    border-style: solid;
+    margin: 0 auto;
+    width: 450px;
+    border-radius: 5px;
+}
+
+.sign-in-button {
+    margin-right: 0;
+    margin-left: auto;
+    display: block;
+}
+
+.vertical-center-div {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+}
