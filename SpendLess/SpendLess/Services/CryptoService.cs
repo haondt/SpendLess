@@ -28,7 +28,7 @@ namespace SpendLess.Services
 
         public string Hash(string plainText, string salt)
         {
-            var plainTextBytes = Convert.FromBase64String(plainText);
+            var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
             var saltBytes = Convert.FromBase64String(salt);
             var plainTextWithSaltBytes =  plainTextBytes.Concat(saltBytes).ToArray();
             var hash = SHA256.Create().ComputeHash(plainTextWithSaltBytes);

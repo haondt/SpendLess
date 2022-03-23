@@ -13,11 +13,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using SpendLess.API.Extensions;
+using SpendLess.Extensions;
 
 namespace SpendLess.API
 {
     public class Startup
     {
+        private const string CORS_POLICY = "CorsPolicy";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -43,6 +46,18 @@ namespace SpendLess.API
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
                     };
                 });
+
+            services.AddSpendLessAPIServices();
+            services.AddSpendLessServices();
+            services.AddAuthenticationServices(Configuration);
+            services.AddPersistentStorage();
+
+            services.AddCors(o => o.AddPolicy(CORS_POLICY, builder =>
+            {
+                builder.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+            }));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -53,6 +68,7 @@ namespace SpendLess.API
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseCors(CORS_POLICY);
             app.UseHttpsRedirection();
 
             app.UseRouting();

@@ -136,6 +136,7 @@ namespace SpendLess.Services
                 {
                     Username = username,
                     PasswordHash = hashedPass,
+                    PasswordSalt = salt,
                     Name = registrationDto.Name
                 }))
                 {

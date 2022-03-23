@@ -18,7 +18,8 @@ namespace SpendLess.API.Controllers
 {
     [ApiController]
     [Authorize]
-    [ExceptionFilter(typeof(Exception), 500)]
+    [InheritableExceptionFilter(typeof(Exception), 500)]
+    [Produces("application/json")]
     [Route("")]
     public class LoginController
     {

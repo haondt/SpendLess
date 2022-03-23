@@ -1,7 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using SpendLess.Abstractions;
 using SpendLess.Domain.Models;
 using SpendLess.Services;
+using SpendLess.Settings;
 using SpendLess.Storage.Extensions;
 using System;
 using System.Collections.Generic;
@@ -13,8 +15,12 @@ namespace SpendLess.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddAuthenticationServices(this IServiceCollection services)
+        public static IServiceCollection AddAuthenticationServices(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddSingleton<IAuthenticationService, AuthenticationService>();
+            services.AddSingleton<ICryptoService, CryptoService>();
+            services.Configure<AuthenticationSettings>(configuration.GetSection(nameof(AuthenticationSettings)));
+            services.AddSingleton<IJwtService, JwtService>();
             return services;
         }
 

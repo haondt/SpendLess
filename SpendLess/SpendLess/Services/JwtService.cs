@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using SpendLess.Settings;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Microsoft.Extensions.Options;
 
 namespace SpendLess.Services
 {
@@ -18,16 +19,16 @@ namespace SpendLess.Services
         private readonly AuthenticationSettings _authSettings;
         private readonly IClock _clock;
 
-        public JwtService(IConfiguration configuration, AuthenticationSettings authSettings, IClock clock)
+        public JwtService(IConfiguration configuration, IOptions<AuthenticationSettings> authSettings, IClock clock)
         {
             _configuration = configuration;
-            _authSettings = authSettings;
+            _authSettings = authSettings.Value;
             _clock = clock;
         }
 
         public string CreateAccessToken(string username, DateTime expiry)
         {
-            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"].PadLeft(16,'-')));
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Issuer"],

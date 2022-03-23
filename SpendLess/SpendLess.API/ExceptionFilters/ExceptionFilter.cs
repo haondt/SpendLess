@@ -4,24 +4,11 @@ using System;
 
 namespace SpendLess.API.ExceptionFilters
 {
-    public class ExceptionFilter : ExceptionFilterAttribute
+    public class ExceptionFilter : AbstractExceptionFilter
     {
-        private readonly Type _exceptionType;
-        private readonly int _code;
-
-        public ExceptionFilter(Type exceptionType, int code)
+        public ExceptionFilter(Type exceptionType, int code, string message = null) : base(exceptionType, code, message)
         {
-            _exceptionType = exceptionType;
-            _code = code;
         }
-
-        public override void OnException(ExceptionContext context)
-        {
-            if (context.Exception.GetType() == _exceptionType)
-            {
-                context.HttpContext.Response.StatusCode = _code;
-            }
-            base.OnException(context);
-        }
+        protected override bool CheckExceptionType(Type exceptionType) => exceptionType == _exceptionType;
     }
 }
