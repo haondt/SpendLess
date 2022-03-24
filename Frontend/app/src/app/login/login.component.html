@@ -1,38 +1,63 @@
-
 <div class="vertical-center-div">
 
-<div class="horizontal-center-div">
+    <div class="horizontal-center-div">
 
-<div class="login-form">
-    <h1>Sign in</h1>
-    <form>
-    <mat-form-field appearance="outline"
-        [formGroup]="inputFormGroup">
-        <mat-label>Username</mat-label>
-        <input matInput
-        formControlName="username"
-        autocomplete="username">
-    </mat-form-field>
-    <mat-form-field appearance="outline"
-        [formGroup]="inputFormGroup">
-        <mat-label>Password</mat-label>
-        <input matInput [type]="hide ? 'password' : 'text'"
-        formControlName="password"
-        autocomplete="current-password">
-        <mat-error *ngIf="errorControl.hasError('failed')"></mat-error>
-        <button mat-icon-button matSuffix (click)="hide = !hide"
-            [attr.aria-label]="'Hide password'"
-            [attr.aria-pressed]="hide">
-            <mat-icon>{{hide ? 'visibility_off' : 'visibility' }}</mat-icon>
-        </button>
-    </mat-form-field>
-        <mat-error *ngIf="errorControl.hasError('failed')">Invalid username or password</mat-error>
-</form>
-    <a href="/register">Create account</a>
-    <div>
-        <button mat-flat-button color="accent" class="sign-in-button"
-        (click)="login()">Sign in</button>
+        <div class="login-form" *ngIf="!registerMode">
+            <h1>Sign in</h1>
+            <form>
+                <mat-form-field appearance="outline" [formGroup]="loginFormGroup">
+                    <mat-label>Username</mat-label>
+                    <input matInput formControlName="username" autocomplete="username">
+                </mat-form-field>
+                <mat-form-field appearance="outline" [formGroup]="loginFormGroup">
+                    <mat-label>Password</mat-label>
+                    <input matInput [type]="loginHidePassword ? 'password' : 'text'" formControlName="password"
+                        autocomplete="current-password">
+                    <mat-error *ngIf="loginErrorControl.hasError('failed')"></mat-error>
+                    <button mat-icon-button matSuffix (click)="loginHidePassword = !loginHidePassword"
+                        [attr.aria-label]="'Hide password'" [attr.aria-pressed]="loginHidePassword">
+                        <mat-icon>{{loginHidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                    </button>
+                </mat-form-field>
+                <mat-error *ngIf="loginErrorControl.hasError('failed')">Invalid username or password</mat-error>
+                <mat-error *ngIf="loginErrorControl.hasError('missing')">Please ensure all fields are filled</mat-error>
+                <mat-error *ngIf="loginErrorControl.hasError('server')">Error communicating with server. Please try again.</mat-error>
+            </form>
+            <a href="" (click)="toggleRegisterMode()">Create account</a>
+            <div>
+                <button [disabled]="waiting" mat-flat-button color="accent" class="sign-in-button" (click)="login()">Sign in</button>
+            </div>
+        </div>
+
+        <div class="login-form" *ngIf="registerMode">
+            <h1>Create an account</h1>
+            <form>
+                <mat-form-field appearance="outline" [formGroup]="registerFormGroup">
+                    <mat-label>Name</mat-label>
+                    <input matInput formControlName="name" autocomplete="name">
+                </mat-form-field>
+                <mat-form-field appearance="outline" [formGroup]="registerFormGroup">
+                    <mat-label>Username</mat-label>
+                    <input matInput formControlName="username" autocomplete="username">
+                    <mat-error *ngIf="registerUsernameControl.hasError('unavailable')">Username unavailable</mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline" [formGroup]="registerFormGroup">
+                    <mat-label>Password</mat-label>
+                    <input matInput [type]="registerHidePassword ? 'password' : 'text'" formControlName="password"
+                        autocomplete="new-password">
+                    <mat-error *ngIf="registerErrorControl.hasError('failed')"></mat-error>
+                    <button mat-icon-button matSuffix (click)="registerHidePassword = !registerHidePassword"
+                        [attr.aria-label]="'registerHidePassword password'" [attr.aria-pressed]="registerHidePassword">
+                        <mat-icon>{{registerHidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                    </button>
+                </mat-form-field>
+                <mat-error *ngIf="registerErrorControl.hasError('missing')">Please ensure all fields are filled</mat-error>
+                <mat-error *ngIf="registerErrorControl.hasError('server')">Error communicating with server. Please try again.</mat-error>
+            </form>
+            <a href="" (click)="toggleRegisterMode()">I have an account</a>
+            <div>
+                <button [disabled]="waiting" mat-flat-button color="accent" class="sign-in-button" (click)="register()">Register</button>
+            </div>
+        </div>
     </div>
-</div>
-</div>
 </div>

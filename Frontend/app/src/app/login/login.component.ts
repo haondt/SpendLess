@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { UserAuthenticationModel } from '../models/authentication/UserAuthenticationModel';
 import { AuthenticationService } from '../services/authentication.service';
 
-import { FormControl, FormBuilder, FormGroup } from '@angular/forms';
+import { FormControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UserRegistrationModel } from '../models/authentication/UserRegistrationModel';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -10,15 +12,27 @@ import { FormControl, FormBuilder, FormGroup } from '@angular/forms';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
-  hide = true;
+  registerMode = false;
+  waiting = false;
 
-  authModel: UserAuthenticationModel = new UserAuthenticationModel();
-  loginFailed: boolean = true;
-  errorControl = new FormControl('');
-  inputFormGroup = new FormGroup({
-    username: new FormControl(),
-    password: new FormControl(),
-    message: this.errorControl
+  loginHidePassword = true;
+  loginErrorControl = new FormControl('');
+  loginFormGroup = new FormGroup({
+    username: new FormControl('', [Validators.required]),
+    password: new FormControl('', [Validators.required]),
+    message: this.loginErrorControl
+  });
+
+  registerHidePassword = true;
+  registerErrorControl = new FormControl('');
+  registerPasswordControl = new FormControl('', [Validators.required]);
+  registerUsernameControl = new FormControl('', [Validators.required]);
+  registerNameControl = new FormControl('', [Validators.required]);
+  registerFormGroup = new FormGroup({
+    name: this.registerNameControl,
+    username: this.registerUsernameControl,
+    password: this.registerPasswordControl,
+    message: this.registerErrorControl
   });
 
 
@@ -28,22 +42,73 @@ export class LoginComponent implements OnInit {
   }
 
   login(){
-    this.authModel.username = this.inputFormGroup.controls['username'].value;
-    this.authModel.password = this.inputFormGroup.controls['password'].value;
-    this.errorControl.setErrors({});
-    if (this.authModel.username && this.authModel.password){
-      this.authService.login(this.authModel)
+    this.waiting = true;
+    var authModel = new UserAuthenticationModel();
+    authModel.username = this.loginFormGroup.controls['username'].value;
+    authModel.password = this.loginFormGroup.controls['password'].value;
+    this.loginErrorControl.reset();
+    this.loginFormGroup.markAllAsTouched();
+    this.loginFormGroup.markAsDirty();
+    if (this.loginFormGroup.valid){
+      this.authService.login(authModel)
         .subscribe({
           next: s => alert(s),
-          error: () => {
-            this.inputFormGroup.controls['username'].setErrors({failed:true});
-            this.inputFormGroup.controls['password'].setErrors({failed:true});
-            this.inputFormGroup.controls['message'].setErrors({failed:true});
+          error: (e: HttpErrorResponse) => {
+            if (e.status == 401){
+              this.loginFormGroup.controls['password'].reset();
+              this.loginErrorControl.setErrors({failed:true});
+            }
+            else{
+              this.loginErrorControl.setErrors({server:true});
+            }
+            this.waiting = false;
           }
         });
     }
+    else{
+      this.loginFormGroup.controls['message'].setErrors({missing:true});
+      this.waiting = false;
+    }
   }
 
+  register(){
+    this.waiting = true;
+    var regModel = new UserRegistrationModel();
+    regModel.name = this.registerNameControl.value;
+    regModel.username = this.registerUsernameControl.value;
+    regModel.password = this.registerPasswordControl.value;
+    this.registerFormGroup.markAllAsTouched();
+    this.registerErrorControl.reset();
+    if (this.registerFormGroup.valid){
+      this.authService.register(regModel)
+        .subscribe({
+          next: s => alert(s),
+          error: (e: HttpErrorResponse) => {
+            if (e.status == 409){
+              this.registerUsernameControl.setErrors({unavailable:true});
+            }
+            else{
+              this.registerErrorControl.setErrors({server:true});
+            }
+            this.registerPasswordControl.reset();
+            this.waiting = false;
+          }
+        });
+    }
+    else{
+      if (!this.registerPasswordControl.valid || !this.registerNameControl.valid){
+        this.registerErrorControl.setErrors({missing:true});
+      }
+      this.waiting = false;
+    }
+  }
 
-
+  toggleRegisterMode(){
+    if (!this.waiting){
+      this.registerFormGroup.reset();
+      this.loginFormGroup.reset();
+      this.registerMode = !this.registerMode;
+    }
+    return false;
+  }
 }
