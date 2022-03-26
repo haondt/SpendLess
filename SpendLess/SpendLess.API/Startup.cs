@@ -43,7 +43,7 @@ namespace SpendLess.API
                         ValidateIssuerSigningKey = true,
                         ValidIssuer = Configuration["Jwt:Issuer"],
                         ValidAudience = Configuration["Jwt:Issuer"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"].PadLeft(16, '-')))
                     };
                 });
 
@@ -54,8 +54,9 @@ namespace SpendLess.API
 
             services.AddCors(o => o.AddPolicy(CORS_POLICY, builder =>
             {
-                builder.AllowAnyOrigin()
+                builder.SetIsOriginAllowed(s => { Console.WriteLine(s); return true; }) // http://localhost:4200
                 .AllowAnyMethod()
+                .AllowCredentials()
                 .AllowAnyHeader();
             }));
         }
@@ -68,13 +69,13 @@ namespace SpendLess.API
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCors(CORS_POLICY);
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseCors(CORS_POLICY);
 
-            app.UseAuthorization();
             app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

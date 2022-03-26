@@ -17,8 +17,8 @@ namespace SpendLess.Extensions
     {
         public static IServiceCollection AddAuthenticationServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton<IAuthenticationService, AuthenticationService>();
-            services.AddSingleton<ICryptoService, CryptoService>();
+            services.AddTransient<IAuthenticationService, AuthenticationService>();
+            services.AddTransient<ICryptoService, CryptoService>();
             services.Configure<AuthenticationSettings>(configuration.GetSection(nameof(AuthenticationSettings)));
             services.AddSingleton<IJwtService, JwtService>();
             return services;
@@ -27,6 +27,8 @@ namespace SpendLess.Extensions
         public static IServiceCollection AddSpendLessServices(this IServiceCollection services)
         {
             services.AddSingleton<IClock, Clock>();
+            services.AddTransient<IUserDataService, UserDataService>();
+            services.AddTransient<IPrincipalService, PrincipalService>();
             return services;
         }
 

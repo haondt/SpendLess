@@ -30,7 +30,7 @@ namespace SpendLess.Storage
                 return JsonConvert.DeserializeObject<Dictionary<TKey, TEntity>>(reader.ReadToEnd());
         }
 
-        public Task<TKey> Create(TEntity obj)
+        public Task<TKey> CreateAsync(TEntity obj)
         {
             var data = ReadData();
             var id = _keyGenerator();
@@ -39,7 +39,7 @@ namespace SpendLess.Storage
             return Task.FromResult(id);
         }
 
-        public Task<bool> Create(TKey key, TEntity obj)
+        public Task<bool> CreateAsync(TKey key, TEntity obj)
         {
             var data = ReadData();
             if (data.ContainsKey(key))
@@ -49,7 +49,7 @@ namespace SpendLess.Storage
             return Task.FromResult(true);
         }
 
-        public Task<(bool success, TEntity entity)> Get(TKey key)
+        public Task<(bool success, TEntity entity)> GetAsync(TKey key)
         {
             var data = ReadData();
             if (data.TryGetValue(key, out var obj))
@@ -57,7 +57,7 @@ namespace SpendLess.Storage
             return Task.FromResult((false, default(TEntity)));
         }
 
-        public Task<bool> Update(TKey key, TEntity obj)
+        public Task<bool> UpdateAsync(TKey key, TEntity obj)
         {
             var data = ReadData();
             if (data.ContainsKey(key))
@@ -69,7 +69,7 @@ namespace SpendLess.Storage
             return Task.FromResult(false);
         }
 
-        public Task<bool> Delete(TKey key)
+        public Task<bool> DeleteAsync(TKey key)
         {
             var data = ReadData();
             if (data.ContainsKey(key))

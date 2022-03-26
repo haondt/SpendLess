@@ -41,10 +41,10 @@ namespace SpendLess.Services
 
         public async Task<(bool success, AuthenticationTokenData tokenData)> TryAuthenticateUserAsync(UserAuthenticationDto authenticationDto)
         {
-            var username = authenticationDto.Username.ToLower();
+            var username = authenticationDto.Username;
             if (!string.IsNullOrEmpty(username))
             {
-                var (success, entity) = await _userStorage.Get(username);
+                var (success, entity) = await _userStorage.GetAsync(username);
                 if (success)
                 {
                     var hashedPass = _cryptoService.Hash(authenticationDto.Password, entity.PasswordSalt);
@@ -58,12 +58,12 @@ namespace SpendLess.Services
                             Username = username
                         };
                         
-                        if (await _refreshTokenStorage.Create(refreshTokenValue, refreshTokenData))
+                        if (await _refreshTokenStorage.CreateAsync(refreshTokenValue, refreshTokenData))
                         {
                             return (true, new AuthenticationTokenData
                             {
                                 RefreshToken = refreshTokenValue,
-                                AccessToken = _jwtService.CreateAccessToken(username, 
+                                SessionToken = _jwtService.CreateAccessToken(username, 
                                     _clock.UtcNow + TimeSpan.FromSeconds(_authenticationSettings.AccessTokenExpirationSeconds))
                             });
                         }
@@ -78,48 +78,44 @@ namespace SpendLess.Services
         }
 
 
-        public async Task<(bool success, AuthenticationTokenData newTokenData)> TryRefreshAccessTokenAsync(AuthenticationTokenData tokenData)
+        public async Task<(bool success, AuthenticationTokenData newTokenData)> TryRefreshSessionTokenAsync(string refreshToken)
         {
-            var username = _jwtService.GetUsernameFromAccessToken(tokenData.AccessToken).ToLower();
-            if (!string.IsNullOrEmpty(username))
+            var (success, entity) = await _refreshTokenStorage.GetAsync(refreshToken);
+            if (success && entity.IsValid && entity.Expiry > _clock.UtcNow)
             {
-                var (success, entity) = await _refreshTokenStorage.Get(tokenData.RefreshToken);
-                if (success && entity.IsValid && entity.Expiry > _clock.UtcNow)
+                var newRefreshToken = _cryptoService.GenerateRefreshToken();
+                var newRefreshTokenData = new RefreshTokenData
                 {
-                    var newRefreshToken = _cryptoService.GenerateRefreshToken();
-                    var newRefreshTokenData = new RefreshTokenData
-                    {
-                        Expiry = entity.Expiry,
-                        Username = username,
-                        IsValid = true
-                    };
+                    Expiry = entity.Expiry,
+                    Username = entity.Username,
+                    IsValid = true
+                };
 
-                    if (!await _refreshTokenStorage.Create(newRefreshToken, newRefreshTokenData))
-                    {
-                        if(!await _refreshTokenStorage.Delete(tokenData.RefreshToken))
-                            if (!await _refreshTokenStorage.Update(tokenData.RefreshToken, new RefreshTokenData
-                            {
-
-                                Expiry = entity.Expiry,
-                                IsValid = false,
-                                Username = username
-                            }))
-                            {
-                                if (! await _refreshTokenStorage.Delete(newRefreshToken))
-                                    throw new Exception("Unable to invalidate new refresh token");
-                                throw new Exception("Unable to invalidate old refresh token");
-                            }
-                        throw new Exception("Collision encountered when generating refresh token");
-                    }
-                    else
-                    {
-                        return (true, new AuthenticationTokenData
+                if (!await _refreshTokenStorage.CreateAsync(newRefreshToken, newRefreshTokenData))
+                {
+                    if (!await _refreshTokenStorage.DeleteAsync(refreshToken))
+                        if (!await _refreshTokenStorage.UpdateAsync(refreshToken, new RefreshTokenData
                         {
-                            RefreshToken = newRefreshToken,
-                            AccessToken = _jwtService.CreateAccessToken(username, 
-                                _clock.UtcNow + TimeSpan.FromSeconds(_authenticationSettings.AccessTokenExpirationSeconds))
-                        });
-                    }
+
+                            Expiry = entity.Expiry,
+                            IsValid = false,
+                            Username = entity.Username
+                        }))
+                        {
+                            if (!await _refreshTokenStorage.DeleteAsync(newRefreshToken))
+                                throw new Exception("Unable to invalidate new refresh token");
+                            throw new Exception("Unable to invalidate old refresh token");
+                        }
+                    throw new Exception("Collision encountered when generating refresh token");
+                }
+                else
+                {
+                    return (true, new AuthenticationTokenData
+                    {
+                        RefreshToken = newRefreshToken,
+                        SessionToken = _jwtService.CreateAccessToken(entity.Username,
+                            _clock.UtcNow + TimeSpan.FromSeconds(_authenticationSettings.AccessTokenExpirationSeconds))
+                    });
                 }
             }
             return (false, null);
@@ -127,13 +123,14 @@ namespace SpendLess.Services
 
         public async Task<(bool success, bool usernameAvailable, AuthenticationTokenData tokenData)> TryRegisterUserAsync(UserRegistrationDto registrationDto)
         {
-            var username = registrationDto.Username.ToLower();
+            var username = registrationDto.Username;
             if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(registrationDto.Password))
             {
                 var salt = _cryptoService.GenerateSalt();
                 var hashedPass = _cryptoService.Hash(registrationDto.Password, salt);
-                if (await _userStorage.Create(username, new User
+                if (await _userStorage.CreateAsync(username, new User
                 {
+                    Id = Guid.NewGuid(),
                     Username = username,
                     PasswordHash = hashedPass,
                     PasswordSalt = salt,
@@ -148,18 +145,18 @@ namespace SpendLess.Services
                         Username = username
                     };
 
-                    if (await _refreshTokenStorage.Create(refreshTokenValue, refreshTokenData))
+                    if (await _refreshTokenStorage.CreateAsync(refreshTokenValue, refreshTokenData))
                     {
                         return (true, true, new AuthenticationTokenData
                         {
                             RefreshToken = refreshTokenValue,
-                            AccessToken = _jwtService.CreateAccessToken(username,
+                            SessionToken = _jwtService.CreateAccessToken(username,
                                 _clock.UtcNow + TimeSpan.FromSeconds(_authenticationSettings.AccessTokenExpirationSeconds))
                         });
                     }
                     else
                     {
-                        await _userStorage.Delete(username);
+                        await _userStorage.DeleteAsync(username);
                         throw new Exception("Collision encountered when generating refresh token");
                     }
                 }
@@ -170,17 +167,16 @@ namespace SpendLess.Services
             return (false, true, null);
         }
 
-        public async Task<bool> TryRevokeUserAsync(AuthenticationTokenData tokenData)
+        public async Task<bool> TryRevokeUserAsync(string refreshToken)
         {
-            var username = _jwtService.GetUsernameFromAccessToken(tokenData.AccessToken).ToLower();
-            var (success, entity) = await _refreshTokenStorage.Get(tokenData.RefreshToken);
+            var (success, entity) = await _refreshTokenStorage.GetAsync(refreshToken);
             if (success)
             {
-                if (!await _refreshTokenStorage.Delete(tokenData.RefreshToken))
-                    if (!await _refreshTokenStorage.Update(tokenData.RefreshToken, new RefreshTokenData
+                if (!await _refreshTokenStorage.DeleteAsync(refreshToken))
+                    if (!await _refreshTokenStorage.UpdateAsync(refreshToken, new RefreshTokenData
                     {
                         Expiry = entity.Expiry,
-                        Username = username,
+                        Username = entity.Username,
                         IsValid = false
                     }))
                         throw new Exception("Unable to invalidate old refresh token");

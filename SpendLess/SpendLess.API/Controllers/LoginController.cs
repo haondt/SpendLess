@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using SpendLess.Abstractions;
 using SpendLess.API.ExceptionFilters;
@@ -16,23 +17,21 @@ using SameSiteMode = Microsoft.AspNetCore.Http.SameSiteMode;
 
 namespace SpendLess.API.Controllers
 {
-    [ApiController]
-    [Authorize]
-    [InheritableExceptionFilter(typeof(Exception), 500)]
-    [Produces("application/json")]
-    [Route("")]
-    public class LoginController
+    public class LoginController : BaseController
     {
         private readonly IAuthenticationService _authService;
         private readonly IClock _clock;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IPrincipalService _principalService;
         private readonly AuthenticationSettings _authSettings;
 
-        public LoginController(IAuthenticationService authService, IOptions<AuthenticationSettings> authOptions, IClock clock, IHttpContextAccessor httpContextAccessor)
+        public LoginController(IAuthenticationService authService, IOptions<AuthenticationSettings> authOptions, IClock clock, IHttpContextAccessor httpContextAccessor,
+            IPrincipalService principalService)
         {
             _authService = authService;
             _clock = clock;
             _httpContextAccessor = httpContextAccessor;
+            _principalService = principalService;
             _authSettings = authOptions.Value;
         }
 
@@ -41,11 +40,12 @@ namespace SpendLess.API.Controllers
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] UserAuthenticationDto authenticationDto)
         {
+            authenticationDto.Username = authenticationDto.Username.ToLowerInvariant();
             var (success, tokenData) = await _authService.TryAuthenticateUserAsync(authenticationDto);
             if (success)
             {
                 SetRefreshTokenCookie(tokenData.RefreshToken);
-                return new OkObjectResult(tokenData.AccessToken);
+                return new OkObjectResult(tokenData.SessionToken);
             }
 
             return new UnauthorizedResult(); 
@@ -55,8 +55,8 @@ namespace SpendLess.API.Controllers
         [Route("logout")]
         public async Task<IActionResult> Logout()
         {
-            if (TryGetAuthenticationTokenData(out var tokenData))
-                if (await _authService.TryRevokeUserAsync(tokenData))
+            if (_principalService.TryGetRefreshToken(out var token))
+                if (await _authService.TryRevokeUserAsync(token))
                     return new OkResult();
             return new UnauthorizedResult();
         }
@@ -66,11 +66,12 @@ namespace SpendLess.API.Controllers
         [Route("register")]
         public async Task<IActionResult> Register([FromBody] UserRegistrationDto registrationDto)
         {
+            registrationDto.Username = registrationDto.Username.ToLowerInvariant();
             var (success, usernameAvailable, tokenData) = await _authService.TryRegisterUserAsync(registrationDto);
             if (success)
             {
                 SetRefreshTokenCookie(tokenData.RefreshToken);
-                return new OkObjectResult(tokenData.AccessToken);
+                return new OkObjectResult(tokenData.SessionToken);
             }
             else if (!usernameAvailable)
                 return new ConflictResult();
@@ -78,48 +79,23 @@ namespace SpendLess.API.Controllers
         }
 
 
-        [HttpPost]
+        [HttpGet]
         [AllowAnonymous]
         [Route("refresh-token")]
         public async Task<IActionResult> RefreshToken()
         {
-            if (TryGetAuthenticationTokenData(out var tokenData))
+            if (_principalService.TryGetRefreshToken(out var token))
             {
-                var (success, newTokenData) = await _authService.TryRefreshAccessTokenAsync(tokenData);
+                var (success, newTokenData) = await _authService.TryRefreshSessionTokenAsync(token);
 
                 if (success)
                 {
-                    SetRefreshTokenCookie(tokenData.RefreshToken);
-                    return new OkObjectResult(newTokenData.AccessToken);
+                    SetRefreshTokenCookie(newTokenData.RefreshToken);
+                    return new OkObjectResult(newTokenData.SessionToken);
                 }
             }
 
             return new UnauthorizedResult();
-        }
-
-        private bool TryGetAuthenticationTokenData(out AuthenticationTokenData tokenData)
-        {
-            if (_httpContextAccessor.HttpContext.Request.Cookies.TryGetValue(_authSettings.RefreshTokenCookieName, out var refreshToken))
-            {
-                if (!string.IsNullOrEmpty(refreshToken))
-                {
-                    _httpContextAccessor.HttpContext.Request.Headers.TryGetValue(HeaderNames.Authorization, out var accessTokenValues);
-                    var accessToken = accessTokenValues.FirstOrDefault();
-                    if (!string.IsNullOrEmpty(accessToken))
-                    {
-                        tokenData = new AuthenticationTokenData
-                        {
-                            AccessToken = accessToken,
-                            RefreshToken = refreshToken
-                        };
-
-                        return true;
-                    }
-                }
-            }
-
-            tokenData = null;
-            return false;
         }
 
         private void SetRefreshTokenCookie(string token)
@@ -127,7 +103,7 @@ namespace SpendLess.API.Controllers
             _httpContextAccessor.HttpContext.Response.Cookies.Append(_authSettings.RefreshTokenCookieName, token, new CookieOptions
             {
                 HttpOnly = true,
-                SameSite = SameSiteMode.Strict,
+                SameSite = SameSiteMode.None,
                 Secure = true,
                 Expires = _clock.UtcNow + TimeSpan.FromSeconds(_authSettings.RefreshTokenExpirationSeconds)
             });

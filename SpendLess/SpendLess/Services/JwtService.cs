@@ -48,7 +48,7 @@ namespace SpendLess.Services
                 ValidateAudience = false,
                 ValidateLifetime = false,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"].PadLeft(16, '-'))),
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();

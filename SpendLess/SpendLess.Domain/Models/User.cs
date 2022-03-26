@@ -20,6 +20,6 @@ namespace SpendLess.Domain.Models
         public List<Category> Categories { get; set; } = new List<Category>();
         public List<SavingsGoal> SavingsGoals { get; set; } = new List<SavingsGoal>();
         public List<SpendingGoal> SpendingGoals { get; set; } = new List<SpendingGoal>();
-        public List<TransactionDatapointMapping> datapointMappings { get; set; } = new List<TransactionDatapointMapping>();
+        public List<TransactionDatapointMapping> DatapointMappings { get; set; } = new List<TransactionDatapointMapping>();
     }
 }

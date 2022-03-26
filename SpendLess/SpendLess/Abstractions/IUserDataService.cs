@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SpendLess.Domain.Dtos;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace SpendLess.Abstractions
 {
-    public class AuthenticationTokenData
+    public interface IUserDataService
     {
-        public string RefreshToken { get; set; }
-        public string SessionToken { get; set; }
+        public Task<UserInfoDto> GetUserInfo();
     }
 }

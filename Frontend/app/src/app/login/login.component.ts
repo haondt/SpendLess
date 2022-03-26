@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { UserAuthenticationModel } from '../models/authentication/UserAuthenticationModel';
-import { AuthenticationService } from '../services/authentication.service';
+import { AuthenticationService } from '../services/api/authentication.service';
 
 import { FormControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserRegistrationModel } from '../models/authentication/UserRegistrationModel';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -36,7 +37,7 @@ export class LoginComponent implements OnInit {
   });
 
 
-  constructor(private authService: AuthenticationService) { }
+  constructor(private authService: AuthenticationService, private router: Router) { }
 
   ngOnInit(): void {
   }
@@ -52,7 +53,7 @@ export class LoginComponent implements OnInit {
     if (this.loginFormGroup.valid){
       this.authService.login(authModel)
         .subscribe({
-          next: s => alert(s),
+          next: s => this.router.navigate(['home']),
           error: (e: HttpErrorResponse) => {
             if (e.status == 401){
               this.loginFormGroup.controls['password'].reset();
@@ -82,7 +83,7 @@ export class LoginComponent implements OnInit {
     if (this.registerFormGroup.valid){
       this.authService.register(regModel)
         .subscribe({
-          next: s => alert(s),
+          next: s => this.router.navigate(['home']),
           error: (e: HttpErrorResponse) => {
             if (e.status == 409){
               this.registerUsernameControl.setErrors({unavailable:true});

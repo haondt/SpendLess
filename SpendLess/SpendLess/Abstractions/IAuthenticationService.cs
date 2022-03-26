@@ -9,11 +9,11 @@ namespace SpendLess.Abstractions
 {
     public interface IAuthenticationService
     {
-        public Task<(bool success, AuthenticationTokenData newTokenData)> TryRefreshAccessTokenAsync(AuthenticationTokenData tokenData);
+        public Task<(bool success, AuthenticationTokenData newTokenData)> TryRefreshSessionTokenAsync(string refreshToken);
 
         public Task<(bool success, AuthenticationTokenData tokenData)> TryAuthenticateUserAsync(UserAuthenticationDto authenticationDto);
 
-        public Task<bool> TryRevokeUserAsync(AuthenticationTokenData tokenData);
+        public Task<bool> TryRevokeUserAsync(string refreshToken);
 
         public Task<(bool success, bool usernameAvailable, AuthenticationTokenData tokenData)> TryRegisterUserAsync(UserRegistrationDto registrationDto);
     }

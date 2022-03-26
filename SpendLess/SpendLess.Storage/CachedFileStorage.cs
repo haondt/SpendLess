@@ -21,16 +21,16 @@ namespace SpendLess.Storage
             _memoryCacheSettings = options.Value;
         }
 
-        public async Task<TKey> Create(TEntity obj)
+        public async Task<TKey> CreateAsync(TEntity obj)
         {
-            var id = await _inner.Create(obj);
+            var id = await _inner.CreateAsync(obj);
             _memoryCache.Set(id, obj, TimeSpan.FromSeconds(_memoryCacheSettings.MemoryCacheExpirationSeconds));
             return id;
         }
 
-        public async Task<bool> Create(TKey key, TEntity obj)
+        public async Task<bool> CreateAsync(TKey key, TEntity obj)
         {
-            if(await _inner.Create(key, obj))
+            if(await _inner.CreateAsync(key, obj))
             {
                 _memoryCache.Set(key, obj, TimeSpan.FromSeconds(_memoryCacheSettings.MemoryCacheExpirationSeconds));
                 return true;
@@ -38,9 +38,9 @@ namespace SpendLess.Storage
             return false;
         }
 
-        public async Task<bool> Delete(TKey key)
+        public async Task<bool> DeleteAsync(TKey key)
         {
-            if (await _inner.Delete(key))
+            if (await _inner.DeleteAsync(key))
             {
                 _memoryCache.Remove(key);
                 return true;
@@ -48,13 +48,13 @@ namespace SpendLess.Storage
             return false;
         }
 
-        public async Task<(bool success, TEntity entity)> Get(TKey key)
+        public async Task<(bool success, TEntity entity)> GetAsync(TKey key)
         {
             if (_memoryCache.TryGetValue(key, out var obj) && obj is TEntity tObj)
                 return (true, tObj);
             else
             {
-                var value = await _inner.Get(key);
+                var value = await _inner.GetAsync(key);
                 if(value.success)
                 {
                     _memoryCache.Set(key, value.entity, TimeSpan.FromSeconds(_memoryCacheSettings.MemoryCacheExpirationSeconds));
@@ -64,9 +64,9 @@ namespace SpendLess.Storage
             return (false, default(TEntity));
         }
 
-        public async Task<bool> Update(TKey key, TEntity obj)
+        public async Task<bool> UpdateAsync(TKey key, TEntity obj)
         {
-            if (await _inner.Update(key, obj))
+            if (await _inner.UpdateAsync(key, obj))
             {
                 _memoryCache.Set(key, obj, TimeSpan.FromSeconds(_memoryCacheSettings.MemoryCacheExpirationSeconds));
                 return true;
