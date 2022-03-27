@@ -12,13 +12,12 @@ export class HomeComponent implements OnInit {
   username: string;
 
   constructor(private userService: UserService) {
-
+    this.username = "welcome home :)";
   }
 
   ngOnInit(): void {
-    this.userService.getUserInfo().subscribe(info => {
-      this.username = info.username
-    });
+    this.userService.getUserInfo().subscribe();
+
   }
 
 }

@@ -55,9 +55,12 @@ namespace SpendLess.API.Controllers
         [Route("logout")]
         public async Task<IActionResult> Logout()
         {
-            if (_principalService.TryGetRefreshToken(out var token))
-                if (await _authService.TryRevokeUserAsync(token))
+            if (_principalService.TryGetRefreshToken(out var refreshToken))
+            {
+                if (await _authService.TryRevokeUserAsync(refreshToken))
                     return new OkResult();
+
+            }
             return new UnauthorizedResult();
         }
 

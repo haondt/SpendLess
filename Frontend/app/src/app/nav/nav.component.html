@@ -19,9 +19,16 @@
         (click)="drawer.toggle()">
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
-      <span>app</span>
+      <span>SpendLess</span>
+      <span class="spacer"></span>
+      <span *ngIf="name">{{ name }}</span>
+      <button *ngIf="name" mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon>settings</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="logout()">Log out</button>
+      </mat-menu>
     </mat-toolbar>
-    <!-- Add Content Here -->
     <ng-content></ng-content>
   </mat-sidenav-content>
 </mat-sidenav-container>

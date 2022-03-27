@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using SpendLess.API.Extensions;
 using SpendLess.Extensions;
+using SpendLess.Services;
 
 namespace SpendLess.API
 {

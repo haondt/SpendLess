@@ -19,6 +19,7 @@ import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { httpInterceptorProviders } from './services/http-interceptors';
+import { MatMenuModule } from '@angular/material/menu';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import { httpInterceptorProviders } from './services/http-interceptors';
     MatFormFieldModule,
     MatInputModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatMenuModule
   ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]
