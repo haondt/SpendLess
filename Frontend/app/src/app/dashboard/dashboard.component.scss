@@ -1,0 +1,22 @@
+.gridster-item {
+  background: none;
+}
+
+gridster.gridster-item {
+  overflow: initial;
+}
+
+div.toolbar {
+  margin-top: 20px;
+}
+
+mat-card.toolbar {
+  margin: 10px;
+  padding: 14px;
+  display: flex
+}
+
+span.toolbar {
+  flex: 1 1 auto;
+
+}

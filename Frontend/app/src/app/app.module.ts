@@ -20,13 +20,20 @@ import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { httpInterceptorProviders } from './services/http-interceptors';
 import { MatMenuModule } from '@angular/material/menu';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatCardModule } from '@angular/material/card';
+import { GridsterModule } from 'angular-gridster2';
+import { DefaultWindowComponent } from './dashboard/windows/default-window/default-window.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     HomeComponent,
-    NavComponent
+    NavComponent,
+    DashboardComponent,
+    DefaultWindowComponent
   ],
   imports: [
     BrowserModule,
@@ -43,7 +50,10 @@ import { MatMenuModule } from '@angular/material/menu';
     MatInputModule,
     FormsModule,
     ReactiveFormsModule,
-    MatMenuModule
+    MatMenuModule,
+    MatGridListModule,
+    MatCardModule,
+    GridsterModule
   ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]

@@ -12,9 +12,9 @@ namespace SpendLess.Domain.Models
         public Guid Account { get; set; }
         public DateTime Date { get; set; }
         public string Description { get; set; }
-        public int HashCode { get; set; }
-        public override int GetHashCode() => HashCode;
-        public bool Equals(Transaction other) => this.HashCode == other.HashCode;
+        public string ImporteHash { get; set; }
+        public override int GetHashCode() => Id.GetHashCode();
+        public bool Equals(Transaction other) => this.Id == other.Id;
         public bool Recurring { get; set; }
         public string Category { get; set; }
     }

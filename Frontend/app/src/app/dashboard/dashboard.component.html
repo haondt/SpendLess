@@ -1,0 +1,26 @@
+<div class="toolbar">
+
+  <mat-card class="toolbar">
+
+    <span class="toolbar"></span>
+    <button type="button" mat-icon-button *ngIf="!editMode" (click)="enableEditMode()">
+      <mat-icon>edit</mat-icon>
+    </button>
+    <button type="button" mat-icon-button *ngIf="editMode" (click)="addItem()">
+      <mat-icon>add</mat-icon>
+    </button>
+    <button type="button" mat-icon-button *ngIf="editMode" (click)="saveChanges()">
+      <mat-icon>save</mat-icon>
+    </button>
+    <button type="button" mat-icon-button *ngIf="editMode" (click)="discardChanges()">
+      <mat-icon>cancel</mat-icon>
+    </button>
+  </mat-card>
+</div>
+
+<gridster class="gridster-item" [options]="options">
+  <gridster-item [item]="item" class="gridster-item" *ngFor="let item of items">
+    <app-default-window>
+    </app-default-window>
+  </gridster-item>
+</gridster>
