@@ -1,0 +1,12 @@
+@use "./material-palettes.scss" as palettes;
+
+/* default theme */
+$theme: (
+    affirmative: palettes.$secondary-default,
+);
+
+.dark-gold {
+    $theme: (
+        affirmative: palettes.$green-dark,
+    );
+}

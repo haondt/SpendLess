@@ -1,0 +1,69 @@
+@use "@angular/material" as mat;
+
+/* (non-material) palettes */
+$red: mat.$red-palette;
+$blue-grey: mat.$blue-grey-palette;
+$gold: (
+    50: #efede5,
+    100: #d7d1bf,
+    200: #bdb395,
+    300: #a2946a,
+    400: #8e7d4a,
+    500: #7a662a,
+    600: #725e25,
+    700: #67531f,
+    800: #5d4919,
+    900: #4a380f,
+    contrast: (
+        50: rgba(black, 0.9),
+        100: rgba(black, 0.9),
+        200: rgba(black, 0.8),
+        300: rgba(black, 0.8),
+        400: rgba(black, 0.8),
+        500: rgba(white, 0.8),
+        600: rgba(white, 0.8),
+        700: rgba(white, 0.8),
+        800: rgba(white, 0.8),
+        900: rgba(white, 0.8),
+    ),
+);
+
+$black: (
+    50: #000000,
+    100: #000000,
+    200: #000000,
+    300: #000000,
+    400: #000000,
+    500: #000000,
+    600: #000000,
+    700: #000000,
+    800: #000000,
+    900: #000000,
+    contrast: (
+        50: rgba(black, 0.8),
+        100: rgba(black, 0.8),
+        200: rgba(black, 0.8),
+        300: rgba(black, 0.8),
+        400: rgba(black, 0.8),
+        500: rgba(black, 0.8),
+        600: rgba(white, 0.7),
+        700: rgba(white, 0.7),
+        800: rgba(white, 0.7),
+        900: rgba(white, 0.7),
+    ),
+);
+
+$green: mat.$green-palette;
+$indigo: mat.$indigo-palette;
+$pink: mat.$pink-palette;
+
+/* default material palette */
+$primary-default: mat.define-palette($indigo, 500);
+$secondary-default: mat.define-palette($pink, A200, A100, A400);
+
+/* dark material palettes */
+$red-dark: mat.define-palette($red);
+$green-dark: mat.define-palette($green);
+$gold-dark: mat.define-palette($gold, 700, 100, 800);
+$blue-grey-dark: mat.define-palette($blue-grey);
+$black-dark: mat.define-palette($black);

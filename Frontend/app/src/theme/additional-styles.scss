@@ -1,0 +1,14 @@
+@use "sass:map";
+
+@use "@angular/material" as mat;
+@mixin theme($theme) {
+    $aff: map.get($theme, affirmative); // affirmative palette
+    //$pc: map.get($theme, pop-colors); // extra accent colors
+    $affirmative: mat.get-color-from-palette($aff); //  default affirmative color
+    $affirmative-contrast: mat.get-color-from-palette($aff, default-contrast);
+
+    .background.affirmative {
+        background-color: $affirmative;
+        color: $affirmative-contrast;
+    }
+}

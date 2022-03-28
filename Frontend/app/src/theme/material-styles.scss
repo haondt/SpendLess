@@ -1,0 +1,71 @@
+@use "@angular/material" as mat;
+@use "sass:map";
+
+@mixin theme($theme) {
+  $p: map.get($theme, primary); // primary palette
+  $a: map.get($theme, accent); // secondary palette
+  $w: map.get($theme, warn); // warn palette
+  $b: map.get($theme, background); // background palette
+  $f: map.get($theme, foreground); // foreground palette
+  $primary: mat.get-color-from-palette($p); // default primary color
+  $accent: mat.get-color-from-palette($a); // default accent color
+  $warn: mat.get-color-from-palette($w); // default warn color
+  $background: mat.get-color-from-palette($b); // default background color
+  $background-card: mat.get-color-from-palette($b, card); // background palette with card hue
+  $foreground: mat.get-color-from-palette($f, text); // foreground palette with text hue
+  $primary-contrast: mat.get-color-from-palette($p, default-contrast);
+  $accent-contrast: mat.get-color-from-palette($a, default-contrast);
+  $warn-contrast: mat.get-color-from-palette($w, default-contrast);
+
+  .color.primary {
+    color: $primary;
+  }
+
+  .color.accent {
+    color: $accent;
+  }
+
+  .color.warn {
+    color: $warn;
+  }
+
+  .background.primary {
+    background-color: $primary;
+    color: $primary-contrast;
+  }
+
+  .background.accent {
+    background-color: $accent;
+    color: $accent-contrast;
+  }
+
+  .background.warn {
+    background-color: $warn;
+    color: $warn-contrast;
+  }
+
+  .background.card {
+    background-color: $background-card;
+  }
+
+  .background.stacked {
+    background-color: $background;
+  }
+
+  a.link:visited {
+    color: $accent;
+  }
+
+  a.link {
+    color: $primary;
+  }
+
+  html,
+  body {
+    height: 100%;
+  }
+  body {
+    margin: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+  }
+}

@@ -1,4 +1,12 @@
-/* You can add global styles to this file, and also import other style files */
+@use "@angular/material" as mat;
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+/* Material styles */
+@use "./theme/material-themes" as themes;
+
+/* Custom components */
+@use "./app/login/_login.component.scss" as login;
+
+@include mat.core();
+@include mat.all-component-themes(themes.$theme);
+
+@include login.border-color(themes.$theme);

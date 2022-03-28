@@ -1,0 +1,20 @@
+@use "./material-styles.scss" as styles;
+@use "@angular/material" as mat;
+@use "sass:map";
+@use "./additional-styles.scss" as additional-styles;
+@use "./material-palettes.scss" as palettes;
+@use "./additional-themes.scss" as additional-themes;
+
+/* default theme */
+$theme: mat.define-light-theme(palettes.$primary-default, palettes.$secondary-default);
+@include additional-styles.theme(map.merge($theme, additional-themes.$theme));
+@include styles.theme($theme);
+
+/* dark themes */
+.dark-gold {
+    $theme: mat.define-dark-theme(palettes.$gold-dark, palettes.$blue-grey-dark);
+    @include additional-styles.theme(map.merge($theme, additional-themes.$theme));
+    @include styles.theme($theme);
+}
+
+/* light themes */
