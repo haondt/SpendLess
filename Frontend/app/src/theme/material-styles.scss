@@ -72,6 +72,27 @@
     font-family: Roboto, "Helvetica Neue", sans-serif;
   }
 
+  /* scroll bar */
+  ::-webkit-scrollbar {
+    width: 15px;
+    z-index: 2000;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: $primary;
+    z-index: 2001;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: $primary-lighter;
+    z-index: 2001;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: $primary-lighter;
+    z-index: 2001;
+  }
+
   /* Angular material components */
   mat-sidenav-content {
     background-color: $primary-darker;
@@ -90,4 +111,6 @@
   div.mat-menu-panel {
     background-color: $primary;
   }
+
+
 }

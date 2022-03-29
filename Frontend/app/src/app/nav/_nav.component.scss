@@ -1,0 +1,20 @@
+@use 'sass:map';
+
+@mixin theme($theme){
+    $p: map.get($theme, primary); // primary palette
+    $primary: map.get($p, default);
+    $primary-darker: map.get($p, darker);
+    $primary-lighter: map.get($p, lighter);
+
+    .toolbar-shadow {
+        box-shadow: 0px 0px 15px 5px $primary-darker;
+    }
+
+    div.mat-drawer-inner-container {
+        background-color: $primary;
+    }
+
+    mat-sidenav.mat-sidenav {
+        background-color: $primary-lighter;
+    }
+}

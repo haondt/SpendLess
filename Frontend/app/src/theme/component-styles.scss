@@ -1,0 +1,17 @@
+@use "@angular/material" as mat;
+@use "./material-styles.scss" as styles;
+
+/* Custom components */
+@use "../app/login/_login.component.scss" as login;
+@use "../app/nav/_nav.component.scss" as nav;
+
+@mixin theme($theme){
+    /* angular material styles */
+    @include mat.all-component-themes($theme);
+    /* base styles */
+    @include styles.theme($theme);
+
+    /* custom component styles */
+    @include login.border-color($theme);
+    @include nav.theme($theme);
+}

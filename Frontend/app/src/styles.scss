@@ -3,9 +3,18 @@
 /* Material styles */
 @use "./theme/material-themes" as themes;
 
-/* Custom components */
-@use "./app/login/_login.component.scss" as login;
 
 @include mat.core();
 
-@include login.border-color(themes.$theme);
+
+/* global styling */
+/*
+.app-content {
+    position:absolute;
+    top: 64px;
+    bottom: 0;
+    width: 100%;
+    overflow-y: scroll;
+}
+*/
+
