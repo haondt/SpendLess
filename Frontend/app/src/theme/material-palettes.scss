@@ -1,69 +1,138 @@
 @use "@angular/material" as mat;
 
-/* (non-material) palettes */
-$red: mat.$red-palette;
-$blue-grey: mat.$blue-grey-palette;
-$gold: (
-    50: #efede5,
-    100: #d7d1bf,
-    200: #bdb395,
-    300: #a2946a,
-    400: #8e7d4a,
-    500: #7a662a,
-    600: #725e25,
-    700: #67531f,
-    800: #5d4919,
-    900: #4a380f,
+// Good site for these: http://mcg.mbitson.com/
+$dark-gold: mat.define-palette((
+    50 : #edebe6,
+    100 : #d3cec0,
+    200 : #b5ad96,
+    300 : #978c6b,
+    400 : #81744c,
+    500 : #6b5b2c,
+    600 : #635327,
+    700 : #584921,
+    800 : #4e401b,
+    900 : #3c2f10,
     contrast: (
-        50: rgba(black, 0.9),
-        100: rgba(black, 0.9),
-        200: rgba(black, 0.8),
-        300: rgba(black, 0.8),
-        400: rgba(black, 0.8),
-        500: rgba(white, 0.8),
-        600: rgba(white, 0.8),
-        700: rgba(white, 0.8),
-        800: rgba(white, 0.8),
-        900: rgba(white, 0.8),
-    ),
-);
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #000000,
+        400 : #ffffff,
+        500 : #ffffff,
+        600 : #ffffff,
+        700 : #ffffff,
+        800 : #ffffff,
+        900 : #ffffff,
+    )
+), 700, 100, 800);
 
-$black: (
-    50: #000000,
-    100: #000000,
-    200: #000000,
-    300: #000000,
-    400: #000000,
-    500: #000000,
-    600: #000000,
-    700: #000000,
-    800: #000000,
-    900: #000000,
+$dark-purple: mat.define-palette((
+    50 : #e5e4e5,
+    100 : #bebcbf,
+    200 : #928f94,
+    300 : #666269,
+    400 : #464149,
+    500 : #251f29,
+    600 : #211b24,
+    700 : #1b171f,
+    800 : #161219,
+    900 : #0d0a0f,
     contrast: (
-        50: rgba(black, 0.8),
-        100: rgba(black, 0.8),
-        200: rgba(black, 0.8),
-        300: rgba(black, 0.8),
-        400: rgba(black, 0.8),
-        500: rgba(black, 0.8),
-        600: rgba(white, 0.7),
-        700: rgba(white, 0.7),
-        800: rgba(white, 0.7),
-        900: rgba(white, 0.7),
-    ),
-);
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #ffffff,
+        400 : #ffffff,
+        500 : #ffffff,
+        600 : #ffffff,
+        700 : #ffffff,
+        800 : #ffffff,
+        900 : #ffffff,
+    )
+), 500, 300, 700);
 
-$green: mat.$green-palette;
-$indigo: mat.$indigo-palette;
-$pink: mat.$pink-palette;
+$purple-black: mat.define-palette((
+    50 : #e4e4e4,
+    100 : #bcbbbc,
+    200 : #8f8e90,
+    300 : #626063,
+    400 : #403e41,
+    500 : #1e1c20,
+    600 : #1a191c,
+    700 : #161418,
+    800 : #121113,
+    900 : #0a090b,
+    contrast: (
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #ffffff,
+        400 : #ffffff,
+        500 : #ffffff,
+        600 : #ffffff,
+        700 : #ffffff,
+        800 : #ffffff,
+        900 : #ffffff,
+    )
+), 500, 300, 700);
+
+$mild-green: mat.define-palette((
+    50 : #ebf6ec,
+    100 : #cee8cf,
+    200 : #aed9b0,
+    300 : #8dc990,
+    400 : #74be78,
+    500 : #5cb260,
+    600 : #54ab58,
+    700 : #4aa24e,
+    800 : #419944,
+    900 : #308a33,
+    contrast: (
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #000000,
+        400 : #000000,
+        500 : #000000,
+        600 : #000000,
+        700 : #ffffff,
+        800 : #ffffff,
+        900 : #ffffff,
+    )
+));
+
+/* For use in src/lib/core/theming/_palette.scss */
+$mild-red: mat.define-palette((
+    50 : #f4e7e7,
+    100 : #e3c3c3,
+    200 : #d09b9b,
+    300 : #bd7373,
+    400 : #af5555,
+    500 : #a13737,
+    600 : #993131,
+    700 : #8f2a2a,
+    800 : #852323,
+    900 : #741616,
+    contrast: (
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #000000,
+        400 : #ffffff,
+        500 : #ffffff,
+        600 : #ffffff,
+        700 : #ffffff,
+        800 : #ffffff,
+        900 : #ffffff,
+    )
+));
+
+$green: mat.define-palette(mat.$green-palette);
+$indigo: mat.define-palette(mat.$indigo-palette);
+$pink: mat.define-palette(mat.$pink-palette);
+$red: mat.define-palette(mat.$red-palette);
+$blue-grey: mat.define-palette(mat.$blue-grey-palette);
 
 /* default material palette */
 $primary-default: mat.define-palette($indigo, 500);
 $secondary-default: mat.define-palette($pink, A200, A100, A400);
-
-/* dark material palettes */
-$red-dark: mat.define-palette($red);
-$green-dark: mat.define-palette($green);
-$gold-dark: mat.define-palette($gold, 700, 100, 800);
-$blue-grey-dark: mat.define-palette($blue-grey);
-$black-dark: mat.define-palette($black);

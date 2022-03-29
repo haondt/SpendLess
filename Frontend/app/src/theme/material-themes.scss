@@ -7,14 +7,16 @@
 
 /* default theme */
 $theme: mat.define-light-theme(palettes.$primary-default, palettes.$secondary-default);
-@include additional-styles.theme(map.merge($theme, additional-themes.$theme));
+@include additional-styles.theme(map.merge($theme, additional-themes.get-theme(default)));
 @include styles.theme($theme);
+@include mat.all-component-themes($theme);
 
 /* dark themes */
 .dark-gold {
-    $theme: mat.define-dark-theme(palettes.$gold-dark, palettes.$blue-grey-dark);
-    @include additional-styles.theme(map.merge($theme, additional-themes.$theme));
+    $theme: mat.define-dark-theme(palettes.$purple-black, palettes.$dark-gold, palettes.$mild-red);
+    @include additional-styles.theme(map.merge($theme, additional-themes.get-theme(dark-gold)));
     @include styles.theme($theme);
+    @include mat.all-component-themes($theme);
 }
 
 /* light themes */

@@ -1,12 +1,19 @@
 @use "./material-palettes.scss" as palettes;
+@use "sass:map";
 
 /* default theme */
-$theme: (
-    affirmative: palettes.$secondary-default,
+$themes: (
+    default: (
+        affirmative: palettes.$secondary-default,
+    ),
+    dark-gold: (
+        affirmative: palettes.$mild-green,
+    )
 );
 
-.dark-gold {
-    $theme: (
-        affirmative: palettes.$green-dark,
-    );
+@function get-theme($theme){
+    @if map.get($themes, $theme) {
+        @return map.get($themes, $theme);
+    }
+    @return map.get($themes, default);
 }

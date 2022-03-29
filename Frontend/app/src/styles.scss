@@ -7,6 +7,5 @@
 @use "./app/login/_login.component.scss" as login;
 
 @include mat.core();
-@include mat.all-component-themes(themes.$theme);
 
 @include login.border-color(themes.$theme);

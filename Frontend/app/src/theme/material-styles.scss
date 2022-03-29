@@ -8,6 +8,8 @@
   $b: map.get($theme, background); // background palette
   $f: map.get($theme, foreground); // foreground palette
   $primary: mat.get-color-from-palette($p); // default primary color
+  $primary-darker: map.get($p, darker);
+  $primary-lighter: map.get($p, lighter);
   $accent: mat.get-color-from-palette($a); // default accent color
   $warn: mat.get-color-from-palette($w); // default warn color
   $background: mat.get-color-from-palette($b); // default background color
@@ -64,8 +66,23 @@
   body {
     height: 100%;
   }
+
   body {
     margin: 0;
     font-family: Roboto, "Helvetica Neue", sans-serif;
+  }
+
+  /* Angular material components */
+  mat-sidenav-content {
+    background-color: $primary-darker;
+  }
+
+ mat-card.mat-card,
+ mat-expansion-panel-header {
+    background-color: $primary;
+  }
+
+  mat-expansion-panel.mat-expansion-panel {
+    background-color: $primary;
   }
 }
