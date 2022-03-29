@@ -14,8 +14,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using SpendLess.API.Extensions;
+using SpendLess.Authentication.Extensions;
+using SpendLess.Domain.Extensions;
 using SpendLess.Extensions;
-using SpendLess.Services;
 
 namespace SpendLess.API
 {
@@ -49,9 +50,9 @@ namespace SpendLess.API
                 });
 
             services.AddSpendLessAPIServices();
+            services.AddSpendLessDomainServices();
             services.AddSpendLessServices();
-            services.AddAuthenticationServices(Configuration);
-            services.AddPersistentStorage();
+            services.AddSpendLessAuthenticationServices(Configuration);
 
             services.AddCors(o => o.AddPolicy(CORS_POLICY, builder =>
             {

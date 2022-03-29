@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SpendLess.Abstractions
+namespace SpendLess.Abstractions.Providers
 {
-    public interface IUserDataService
+    public interface IUserInfoProvider
     {
         public Task<UserInfoDto> GetUserInfo();
     }

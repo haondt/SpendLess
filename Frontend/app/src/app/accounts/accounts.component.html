@@ -1,0 +1,59 @@
+<div class="outer">
+    <div class="inner">
+        <div class="header">
+
+        <h1>Manage Accounts</h1>
+        </div>
+            <mat-card>
+
+                <button
+                type="button"
+                color="accent"
+                class="header-button"
+                (click)="addAccount()"
+                mat-raised-button>
+                    <span>New Account</span>
+                </button>
+                <span class="header-spacer"></span>
+                <button
+                *ngIf="dirty"
+                (click)="setAccounts()"
+                color="affirmative"
+                type="button"
+                class="header-button affirmative"
+                mat-button>
+                    <span>Save Changes</span>
+                </button>
+                <button
+                *ngIf="dirty"
+                type="button"
+                (click)="resetAccounts()"
+                color="warn"
+                class="header-button"
+                mat-button>
+                    <span>Discard Changes</span>
+                </button>
+            </mat-card>
+        <mat-accordion multi>
+            <mat-expansion-panel *ngFor="let account of accounts;"
+            (opened)="expandAccount(account.id)"
+            (closed)="collapseAccount(account.id)"
+            [expanded]="!collapsed_accounts.has(account.id)">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        {{ account.name }}
+                    </mat-panel-title>
+                    <mat-panel-description>
+                        ${{ account.balance }}
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
+                <p>
+                    {{ account.id }}
+                </p>
+                <mat-action-row>
+                    <button mat-button color="warn" (click)="remove(account)">Delete</button>
+                </mat-action-row>
+            </mat-expansion-panel>
+        </mat-accordion>
+    </div>
+</div>

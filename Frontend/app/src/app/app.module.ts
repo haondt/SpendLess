@@ -25,6 +25,8 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatCardModule } from '@angular/material/card';
 import { GridsterModule } from 'angular-gridster2';
 import { DefaultWindowComponent } from './dashboard/windows/default-window/default-window.component';
+import { AccountsComponent } from './accounts/accounts.component';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 @NgModule({
   declarations: [
@@ -33,7 +35,8 @@ import { DefaultWindowComponent } from './dashboard/windows/default-window/defau
     HomeComponent,
     NavComponent,
     DashboardComponent,
-    DefaultWindowComponent
+    DefaultWindowComponent,
+    AccountsComponent
   ],
   imports: [
     BrowserModule,
@@ -53,7 +56,8 @@ import { DefaultWindowComponent } from './dashboard/windows/default-window/defau
     MatMenuModule,
     MatGridListModule,
     MatCardModule,
-    GridsterModule
+    GridsterModule,
+    MatExpansionModule
   ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]

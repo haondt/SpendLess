@@ -3,7 +3,6 @@ import { Injectable } from "@angular/core";
 import { map, Observable, of, Subject, tap, throwError } from "rxjs";
 import { UserInfoDataModel } from "src/app/models/data/UserInfoData";
 import { ApiService } from "./api.service";
-import { AuthenticationService } from "./authentication.service";
 
 @Injectable({
     providedIn: 'root'

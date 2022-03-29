@@ -18,5 +18,3 @@ $theme: mat.define-light-theme(palettes.$primary-default, palettes.$secondary-de
     @include styles.theme($theme);
     @include mat.all-component-themes($theme);
 }
-
-/* light themes */

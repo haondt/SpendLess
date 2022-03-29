@@ -1,15 +1,15 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
-using SpendLess.Abstractions;
-using SpendLess.Settings;
+using SpendLess.Authentication.Abstractions;
+using SpendLess.Authentication.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SpendLess.Services
+namespace SpendLess.Authentication.Services
 {
     public class PrincipalService : IPrincipalService
     {

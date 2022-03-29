@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SpendLess.Abstractions
+namespace SpendLess.Authentication.Abstractions
 {
     public interface IAuthenticationService
     {

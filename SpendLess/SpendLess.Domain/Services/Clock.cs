@@ -1,11 +1,11 @@
-﻿using SpendLess.Abstractions;
+﻿using SpendLess.Domain.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SpendLess.Services
+namespace SpendLess.Domain.Services
 {
     public class Clock : IClock
     {

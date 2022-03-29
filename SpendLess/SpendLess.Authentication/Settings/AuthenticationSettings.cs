@@ -1,4 +1,4 @@
-﻿namespace SpendLess.Settings
+﻿namespace SpendLess.Authentication.Settings
 {
     public class AuthenticationSettings
     {

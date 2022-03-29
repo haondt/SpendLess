@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SpendLess.Abstractions;
+using SpendLess.Abstractions.Providers;
 using SpendLess.API.ExceptionFilters;
+using SpendLess.Authentication.Abstractions;
 
 namespace SpendLess.API.Controllers
 {
@@ -14,9 +16,9 @@ namespace SpendLess.API.Controllers
     {
 
         private readonly ILogger<UserInfoController> _logger;
-        private readonly IUserDataService _userDataService;
+        private readonly IUserInfoProvider _userDataService;
 
-        public UserInfoController(ILogger<UserInfoController> logger, IUserDataService userDataService)
+        public UserInfoController(ILogger<UserInfoController> logger, IUserInfoProvider userDataService)
         {
             _logger = logger;
             _userDataService = userDataService;

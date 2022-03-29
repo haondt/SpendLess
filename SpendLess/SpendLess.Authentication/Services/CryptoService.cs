@@ -1,4 +1,4 @@
-﻿using SpendLess.Abstractions;
+﻿using SpendLess.Authentication.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SpendLess.Services
+namespace SpendLess.Authentication.Services
 {
     public class CryptoService : ICryptoService
     {

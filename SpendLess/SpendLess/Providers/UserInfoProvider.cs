@@ -1,4 +1,6 @@
 ﻿using SpendLess.Abstractions;
+using SpendLess.Abstractions.Providers;
+using SpendLess.Authentication.Abstractions;
 using SpendLess.Domain.Dtos;
 using SpendLess.Domain.Models;
 using SpendLess.Storage;
@@ -8,27 +10,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SpendLess.Services
+namespace SpendLess.Providers
 {
-    public class UserDataService : IUserDataService
+    public class UserInfoProvider : IUserInfoProvider
     {
+        private readonly IUserProvider _userProvider;
         private readonly IPrincipalService _principalService;
-        private ThrowsExceptionStorage<string, User> _userStorage;
 
-        public UserDataService(IStorage<string, User> userStorage, IPrincipalService principalService)
+        public UserInfoProvider(IUserProvider userProvider, IPrincipalService principalService)
         {
-            _userStorage = new ThrowsExceptionStorage<string, User>(userStorage);
+            _userProvider = userProvider;
             _principalService = principalService;
         }
         public async Task<UserInfoDto> GetUserInfo()
         {
-            var user = await _userStorage.GetAsync(_principalService.GetUsername());
+            var username = _principalService.GetUsername();
+            var user = await _userProvider.GetAsync();
 
             return new UserInfoDto
             {
-                Username = user.Username,
+                Username = username,
                 Name = user.Name,
-                Id = user.Id
             };
         }
     }

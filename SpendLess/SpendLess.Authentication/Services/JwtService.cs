@@ -1,4 +1,4 @@
-﻿using SpendLess.Abstractions;
+﻿using SpendLess.Authentication.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,12 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
-using SpendLess.Settings;
+using SpendLess.Authentication.Settings;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.Extensions.Options;
+using SpendLess.Domain.Abstractions;
 
-namespace SpendLess.Services
+namespace SpendLess.Authentication.Services
 {
     public class JwtService : IJwtService
     {

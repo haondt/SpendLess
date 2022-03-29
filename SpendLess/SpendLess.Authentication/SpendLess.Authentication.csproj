@@ -1,26 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Library</OutputType>
     <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Services\**" />
-    <Compile Remove="Settings\**" />
-    <EmbeddedResource Remove="Services\**" />
-    <EmbeddedResource Remove="Settings\**" />
-    <None Remove="Services\**" />
-    <None Remove="Settings\**" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.16.0" />
+    <PackageReference Include="Microsoft.Net.Http.Headers" Version="2.2.8" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.16.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SpendLess.Authentication\SpendLess.Authentication.csproj" />
     <ProjectReference Include="..\SpendLess.Domain\SpendLess.Domain.csproj" />
     <ProjectReference Include="..\SpendLess.Storage\SpendLess.Storage.csproj" />
   </ItemGroup>

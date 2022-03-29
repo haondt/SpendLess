@@ -9,13 +9,11 @@ namespace SpendLess.Domain.Models
 {
     public class User
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
-        public string Username { get; set; }
         public string PasswordSalt { get; set; }
         public string PasswordHash { get; set; }
 
-        public List<Bank> Banks { get; set; }
+        public List<Account> Accounts { get; set; } = new List<Account>();
         public List<Vendor> Vendors { get; set; } = new List<Vendor>();
         public List<Category> Categories { get; set; } = new List<Category>();
         public List<SavingsGoal> SavingsGoals { get; set; } = new List<SavingsGoal>();

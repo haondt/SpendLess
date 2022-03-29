@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SpendLess.Authentication\SpendLess.Authentication.csproj" />
     <ProjectReference Include="..\SpendLess\SpendLess.csproj" />
   </ItemGroup>
 
