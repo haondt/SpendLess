@@ -3,11 +3,12 @@
 }
 
 gridster.gridster-item {
-  overflow: initial;
+  display:block;
 }
 
 div.toolbar {
-  margin-top: 20px;
+  display: inline-block;
+  width: 100%;
 }
 
 mat-card.toolbar {
@@ -19,4 +20,8 @@ mat-card.toolbar {
 span.toolbar {
   flex: 1 1 auto;
 
+}
+
+.gridster-container {
+  height: 100%;
 }

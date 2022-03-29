@@ -37,7 +37,9 @@ export class DashboardComponent implements OnInit {
       pushItems: true,
       resizable: {
         enabled: true
-      }
+      },
+      setGridSize: false,
+      mobileBreakpoint: -1,
     }
 
     this.items = [
