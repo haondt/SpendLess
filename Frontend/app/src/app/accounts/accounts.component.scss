@@ -38,3 +38,50 @@ mat-card {
 .header-button {
     min-width: auto;
 }
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+div.form-row {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-row table {
+    border-spacing: 0;
+    padding-top:10px;
+    padding-bottom: 10px;
+}
+
+.form-row table td.icon-cell {
+    padding: 0;
+}
+
+.form-row td {
+    padding: 0;
+    padding-left: 10px;
+}
+
+
+.accounts-action-buttons {
+    padding-bottom: 20px;
+  }
+
+  .accounts-headers-align .mat-expansion-panel-header-title,
+  .accounts-headers-align .mat-expansion-panel-header-description {
+    flex-basis: 0;
+  }
+
+  .accounts-headers-align .mat-expansion-panel-header-description {
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .accounts-headers-align .mat-form-field + .mat-form-field {
+    margin-left: 8px;
+  }

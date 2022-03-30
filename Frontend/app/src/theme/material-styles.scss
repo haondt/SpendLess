@@ -11,6 +11,7 @@
   $primary-darker: map.get($p, darker);
   $primary-lighter: map.get($p, lighter);
   $accent: mat.get-color-from-palette($a); // default accent color
+  $accent-lighter: mat.get-color-from-palette($a, lighter); // default accent color
   $warn: mat.get-color-from-palette($w); // default warn color
   $background: mat.get-color-from-palette($b); // default background color
   $background-card: mat.get-color-from-palette($b, card); // background palette with card hue
@@ -62,6 +63,10 @@
     color: $primary;
   }
 
+  a {
+    font-weight: bold;
+  }
+
   html,
   body {
     height: 100%;
@@ -94,15 +99,19 @@
   }
 
   /* Angular material components */
+
+  /* side nav */
   mat-sidenav-content {
     background-color: $primary-darker;
   }
 
+  /* card */
  mat-card.mat-card,
  mat-expansion-panel-header {
     background-color: $primary;
   }
 
+  /* expansion panel */
   mat-expansion-panel.mat-expansion-panel {
     background-color: $primary;
   }
@@ -110,6 +119,23 @@
 
   div.mat-menu-panel {
     background-color: $primary;
+  }
+
+  /* form field */
+  .mat-form-field.mat-focused .mat-form-field-label {
+    color: $accent;
+  }
+
+  .mat-form-field.mat-focused .mat-form-field-ripple{
+    background-color: $accent;
+  }
+
+  .mat-form-field .mat-input-element {
+    caret-color: $primary-contrast;
+  }
+
+  .mat-form-field .mat-form-field-label {
+    color: $primary-contrast;
   }
 
 

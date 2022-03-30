@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AccountModel } from '../models/data/Account';
 import { AccountsService } from '../services/api/accounts.service';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-accounts',
@@ -13,6 +14,7 @@ export class AccountsComponent implements OnInit {
   dirty: boolean = false;
   waiting: boolean = false;
   collapsed_accounts: Set<string> = new Set<string>();
+  accountFormGroups: FormGroup[] = [];
 
   constructor(private accountsService: AccountsService) { }
 
@@ -25,9 +27,27 @@ export class AccountsComponent implements OnInit {
         for(let a of this.accounts){
           this.collapsed_accounts.add(a.id);
         }
+        this.generateFormGroups();
         this.waiting = false;
       }
     });
+  }
+
+  generateFormGroups() {
+    this.accountFormGroups = [];
+    for(let a of this.accounts){
+      this.accountFormGroups.push(new FormGroup({
+        name: new FormControl(a.name, [Validators.required]),
+        balance: new FormControl(a.balance)
+      }))
+    }
+  }
+
+  applyFormGroups() {
+    for(let i in this.accounts){
+      this.accounts[i].name = this.accountFormGroups[i].controls['name'].value;
+      this.accounts[i].balance = this.accountFormGroups[i].controls['balance'].value;
+    }
   }
 
   getAccounts() {
@@ -38,6 +58,7 @@ export class AccountsComponent implements OnInit {
         this.accounts = a;
         this.old_accounts = JSON.stringify(a);
         this.updateCollapsedAccounts();
+        this.generateFormGroups();
         this.waiting = false;
       }
     });
@@ -45,12 +66,14 @@ export class AccountsComponent implements OnInit {
 
   setAccounts() {
     this.waiting = true;
+    this.applyFormGroups();
     this.accountsService.set(this.accounts).subscribe({
       next: a => {
         this.dirty = false;
         this.accounts = a;
         this.old_accounts = JSON.stringify(a);
         this.updateCollapsedAccounts();
+        this.generateFormGroups();
         this.waiting = false;
       }
     });
@@ -78,15 +101,18 @@ export class AccountsComponent implements OnInit {
 
   addAccount() {
     this.touch();
-    var newAccountModel = new AccountModel();
-    newAccountModel.name = "This is a placeholder";
-    newAccountModel.balance = 0;
-    this.accounts.unshift(newAccountModel);
+    this.accounts.unshift(new AccountModel());
+      this.accountFormGroups.unshift(new FormGroup({
+        name: new FormControl('', [Validators.required]),
+        balance: new FormControl(0)
+      }))
   }
 
   remove(account: AccountModel) {
     this.touch();
+    this.applyFormGroups();
     this.accounts.splice(this.accounts.indexOf(account), 1);
+    this.generateFormGroups();
   }
 
   expandAccount(id: string){

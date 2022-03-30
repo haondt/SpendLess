@@ -1,4 +1,6 @@
-﻿namespace SpendLess.Configuration
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace SpendLess.Configuration
 {
     public class ImportMapping
     {

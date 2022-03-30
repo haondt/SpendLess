@@ -2,54 +2,89 @@
     <div class="inner">
         <div class="header">
 
-        <h1>Manage Accounts</h1>
+            <h1>Manage Accounts</h1>
         </div>
-            <mat-card>
+        <mat-card>
 
-                <button
-                type="button"
-                color="accent"
-                class="header-button"
-                (click)="addAccount()"
-                mat-raised-button>
-                    <span>New Account</span>
-                </button>
-                <span class="header-spacer"></span>
-                <button
-                *ngIf="dirty"
-                (click)="setAccounts()"
-                color="affirmative"
-                type="button"
-                class="header-button affirmative"
-                mat-button>
-                    <span>Save Changes</span>
-                </button>
-                <button
-                *ngIf="dirty"
-                type="button"
-                (click)="resetAccounts()"
-                color="warn"
-                class="header-button"
-                mat-button>
-                    <span>Discard Changes</span>
-                </button>
-            </mat-card>
-        <mat-accordion multi>
-            <mat-expansion-panel *ngFor="let account of accounts;"
-            (opened)="expandAccount(account.id)"
-            (closed)="collapseAccount(account.id)"
-            [expanded]="!collapsed_accounts.has(account.id)">
+            <button type="button" color="accent" class="header-button" (click)="addAccount()" mat-raised-button>
+                <span>New Account</span>
+            </button>
+            <span class="header-spacer"></span>
+            <button *ngIf="dirty" (click)="setAccounts()" color="affirmative" type="button"
+                class="header-button affirmative" mat-button>
+                <span>Save Changes</span>
+            </button>
+            <button *ngIf="dirty" type="button" (click)="resetAccounts()" color="warn" class="header-button" mat-button>
+                <span>Discard Changes</span>
+            </button>
+        </mat-card>
+        <mat-accordion class="accounts-headers-align" multi>
+            <mat-expansion-panel *ngFor="let account of accounts; let i = index" (opened)="expandAccount(account.id)"
+                (closed)="collapseAccount(account.id)" [expanded]="!collapsed_accounts.has(account.id)">
                 <mat-expansion-panel-header>
                     <mat-panel-title>
                         {{ account.name }}
                     </mat-panel-title>
                     <mat-panel-description>
-                        ${{ account.balance }}
+                        ${{ account.balance | number: '1.2-2' }}
                     </mat-panel-description>
                 </mat-expansion-panel-header>
-                <p>
-                    {{ account.id }}
-                </p>
+                <form>
+                    <div class="form-row">
+                        <mat-icon>account_balance_wallet</mat-icon>
+                        <mat-form-field appearance="standard" [formGroup]="accountFormGroups[i]">
+                            <mat-label>Account Name</mat-label>
+                            <input matInput formControlName="name">
+                        </mat-form-field>
+                        <mat-form-field appearance="standard" [formGroup]="accountFormGroups[i]" floatLabel="always">
+                            <mat-label>Balance</mat-label>
+                            <input matInput type="number" class="right-align" formControlName="balance">
+                            <span matPrefix>$&nbsp;</span>
+                        </mat-form-field>
+                    </div>
+                    <mat-divider></mat-divider>
+                    <div class="form-row">
+                    </div>
+                    <div class="form-row">
+                        <table>
+                            <tr>
+                                <td class="icon-cell">
+                                    <mat-icon>table_rows</mat-icon>
+                                </td>
+                                <td>
+                                    <span *ngIf="!account.importMapping" color="warn">No import mapping configured.</span>
+                                    <a *ngIf="account.importMapping">Edit import mapping</a>
+                                </td>
+                            </tr>
+                            <tr *ngIf="!account.importMapping">
+                                <td></td>
+                                <td>
+                                    <a class="warn">Click to add one now</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <mat-divider></mat-divider>
+                    <div class="form-row">
+                        <table>
+                            <tr>
+                                <td class="icon-cell">
+                                    <mat-icon>settings_input_component</mat-icon>
+                                </td>
+                                <td>
+                                    <span>{{ account.transactionDatapointMappings.length }} transaction datapoint mappings.</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>
+                                    <a>Click to configure</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </form>
                 <mat-action-row>
                     <button mat-button color="warn" (click)="remove(account)">Delete</button>
                 </mat-action-row>

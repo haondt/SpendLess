@@ -1,0 +1,17 @@
+@use 'sass:map';
+@use "@angular/material" as mat;
+
+@mixin theme($theme){
+  $w: map.get($theme, warn); // warn palette
+  $warn: mat.get-color-from-palette($w); // default warn color
+  $a: map.get($theme, accent); // secondary palette
+  $accent: mat.get-color-from-palette($a); // default accent color
+
+  app-accounts .mat-icon {
+      color: $accent;
+  }
+  app-accounts span[color="warn"] {
+    color: $warn;
+    font-weight: bold;
+  }
+}

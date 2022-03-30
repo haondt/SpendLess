@@ -4,6 +4,7 @@
 /* Custom components */
 @use "../app/login/_login.component.scss" as login;
 @use "../app/nav/_nav.component.scss" as nav;
+@use "../app/accounts/_accounts.component.scss" as accounts;
 
 @mixin theme($theme){
     /* angular material styles */
@@ -12,6 +13,7 @@
     @include styles.theme($theme);
 
     /* custom component styles */
-    @include login.border-color($theme);
+    @include login.theme($theme);
     @include nav.theme($theme);
+    @include accounts.theme($theme);
 }

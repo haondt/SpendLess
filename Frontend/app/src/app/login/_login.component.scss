@@ -2,14 +2,25 @@
 @use '@angular/material' as mat;
 @use 'sass:map';
 
-@mixin border-color($theme){
-    $color-config: mat.get-color-config($theme);
-    $accent-palette: map.get($color-config, 'accent');
+@mixin theme($theme){
+    $p: map.get($theme, primary);
+    $primary: mat.get-color-from-palette($p);
+    $a: map.get($theme, accent);
+    $accent-lighter: map.get($a, lighter);
+    $accent: map.get($a, default);
+
     .horizontal-center-div {
-        border-color: mat.get-color-from-palette($accent-palette, 900);
+        border-color: $accent;
     }
 
     a {
-        color: mat.get-color-from-palette($accent-palette, 900);
+        color: $accent;
+    }
+    a:hover {
+        color: $accent-lighter;
+    }
+
+    div.login-form {
+        background-color: $primary;
     }
 }

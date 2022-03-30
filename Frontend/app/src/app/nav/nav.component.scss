@@ -80,11 +80,16 @@ mat-sidenav-content.mat-sidenav-content {
 mat-sidenav-container.mat-sidenav-container {
   width: 100%;
 }
-:host  {
+
+:host {
     position: absolute;
     height: 100%;
     width: 100%;
     display: flex;
     flex-direction: column;
+}
+
+.mat-nav-list a {
+  font-weight: normal;
 }
 
