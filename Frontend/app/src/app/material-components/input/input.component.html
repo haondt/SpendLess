@@ -1,0 +1,6 @@
+<div [formGroup]="group" (focusin)="onFocusIn($event)" (focusout)="onFocusOut($event)">
+    <input
+    matInput
+    formControlName="num"
+    (input)="_handleInput(group.controls['num'])">
+</div>

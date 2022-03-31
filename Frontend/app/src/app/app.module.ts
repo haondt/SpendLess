@@ -27,6 +27,10 @@ import { GridsterModule } from 'angular-gridster2';
 import { DefaultWindowComponent } from './dashboard/windows/default-window/default-window.component';
 import { AccountsComponent } from './accounts/accounts.component';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatDialogModule } from '@angular/material/dialog';
+import { ImportSettingsConfigurationDialogComponent } from './import-settings-configuration-dialog/import-settings-configuration-dialog.component';
+import { MaterialInputComponent } from './material-components/input/input.component';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
@@ -36,7 +40,9 @@ import { MatExpansionModule } from '@angular/material/expansion';
     NavComponent,
     DashboardComponent,
     DefaultWindowComponent,
-    AccountsComponent
+    AccountsComponent,
+    ImportSettingsConfigurationDialogComponent,
+    MaterialInputComponent
   ],
   imports: [
     BrowserModule,
@@ -57,7 +63,9 @@ import { MatExpansionModule } from '@angular/material/expansion';
     MatGridListModule,
     MatCardModule,
     GridsterModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatDialogModule,
+    MatCheckboxModule
   ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]

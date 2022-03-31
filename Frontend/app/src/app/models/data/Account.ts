@@ -1,9 +1,9 @@
-import { ImportMappingModel } from "./ImportMapping";
+import { ImportSettingsModel } from "./ImportSettings";
 
 export class AccountModel {
     id: string;
     name: string = "New Account";
     balance: number = 0;
-    importMapping: ImportMappingModel;
+    importSettings: ImportSettingsModel = new ImportSettingsModel();
     transactionDatapointMappings: string[] = [];
 }

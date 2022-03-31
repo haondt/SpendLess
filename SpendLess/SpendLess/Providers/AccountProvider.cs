@@ -29,7 +29,7 @@ namespace SpendLess.Providers
             {
                 Id = dto.Id,
                 Balance = dto.Balance,
-                ImportMapping = dto.importMapping,
+                ImportSettings = dto.ImportSettings,
                 TransactionDatapointMappings = dto.transactionDatapointMappings,
                 Name = dto.Name
             }).ToList();

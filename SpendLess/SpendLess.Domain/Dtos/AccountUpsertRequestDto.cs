@@ -14,7 +14,7 @@ namespace SpendLess.Domain.Dtos
         [Required]
         public string Name { get; set; }
         public decimal Balance {get;set;}
-        public ImportMapping importMapping { get; set; }
+        public ImportSettings ImportSettings { get; set; }
         public List<Guid> transactionDatapointMappings { get; set; } = new List<Guid>();
     }
 }

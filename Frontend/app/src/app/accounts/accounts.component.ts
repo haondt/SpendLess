@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { AccountModel } from '../models/data/Account';
 import { AccountsService } from '../services/api/accounts.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { ImportSettingsConfigurationDialogComponent } from '../import-settings-configuration-dialog/import-settings-configuration-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+import { ImportSettingsModel } from '../models/data/ImportSettings';
 
 @Component({
   selector: 'app-accounts',
@@ -16,7 +19,7 @@ export class AccountsComponent implements OnInit {
   collapsed_accounts: Set<string> = new Set<string>();
   accountFormGroups: FormGroup[] = [];
 
-  constructor(private accountsService: AccountsService) { }
+  constructor(private accountsService: AccountsService, private dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.waiting = true;
@@ -36,10 +39,12 @@ export class AccountsComponent implements OnInit {
   generateFormGroups() {
     this.accountFormGroups = [];
     for(let a of this.accounts){
-      this.accountFormGroups.push(new FormGroup({
+      let formGroup = new FormGroup({
         name: new FormControl(a.name, [Validators.required]),
         balance: new FormControl(a.balance)
-      }))
+      });
+      formGroup.valueChanges.subscribe(val => this.touch());
+      this.accountFormGroups.push(formGroup);
     }
   }
 
@@ -92,6 +97,7 @@ export class AccountsComponent implements OnInit {
 
   resetAccounts() {
     this.accounts = JSON.parse(this.old_accounts);
+    this.generateFormGroups();
     this.dirty = false;
   }
 
@@ -102,17 +108,19 @@ export class AccountsComponent implements OnInit {
   addAccount() {
     this.touch();
     this.accounts.unshift(new AccountModel());
-      this.accountFormGroups.unshift(new FormGroup({
+    let formGroup = new FormGroup({
         name: new FormControl('', [Validators.required]),
         balance: new FormControl(0)
-      }))
+    });
+    formGroup.valueChanges.subscribe(val => this.touch());
+    this.accountFormGroups.unshift(formGroup);
   }
 
   remove(account: AccountModel) {
     this.touch();
-    this.applyFormGroups();
-    this.accounts.splice(this.accounts.indexOf(account), 1);
-    this.generateFormGroups();
+    let i = this.accounts.indexOf(account);
+    this.accounts.splice(i, 1);
+    this.accountFormGroups.splice(i, 1);
   }
 
   expandAccount(id: string){
@@ -123,5 +131,28 @@ export class AccountsComponent implements OnInit {
     if(id){
       this.collapsed_accounts.add(id);
     }
+  }
+
+  openImportSettingsConfigurationDialog(account: AccountModel){
+    let importSettings = new ImportSettingsModel();
+    if(account.importSettings){
+      importSettings = JSON.parse(JSON.stringify(account.importSettings));
+    }
+
+    let dialogRef = this.dialog.open(ImportSettingsConfigurationDialogComponent, {
+      data : {importSettings: importSettings}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result){
+        account.importSettings = importSettings
+        this.touch();
+      }
+    });
+
+  }
+
+  openTransactionDatapointMappingConfigurationDialog(account: AccountModel){
+    this.touch();
   }
 }

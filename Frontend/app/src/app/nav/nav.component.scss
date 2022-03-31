@@ -71,11 +71,6 @@ mat-sidenav-content.mat-sidenav-content {
   flex-direction: column;
 }
 
-@media (max-width: 599px){
-  mat-sidenav-content.mat-sidenav-content {
-    top: 56px;
-  }
-}
 
 mat-sidenav-container.mat-sidenav-container {
   width: 100%;
