@@ -5,6 +5,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ImportSettingsConfigurationDialogComponent } from '../import-settings-configuration-dialog/import-settings-configuration-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ImportSettingsModel } from '../models/data/ImportSettings';
+import { DatapointMappingsConfigurationDialogComponent } from '../datapoint-mappings-configuration-dialog/datapoint-mappings-configuration-dialog.component';
 
 @Component({
   selector: 'app-accounts',
@@ -140,7 +141,8 @@ export class AccountsComponent implements OnInit {
     }
 
     let dialogRef = this.dialog.open(ImportSettingsConfigurationDialogComponent, {
-      data : {importSettings: importSettings}
+      data : {importSettings: importSettings},
+      maxWidth: "100vw"
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -149,10 +151,18 @@ export class AccountsComponent implements OnInit {
         this.touch();
       }
     });
-
   }
 
   openTransactionDatapointMappingConfigurationDialog(account: AccountModel){
-    this.touch();
+    let dialogRef = this.dialog.open(DatapointMappingsConfigurationDialogComponent, {
+      data : {datapointMappings: []},
+      maxWidth: "100vw"
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result){
+        this.touch();
+      }
+    });
   }
 }

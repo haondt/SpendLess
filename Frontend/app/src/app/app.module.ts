@@ -31,6 +31,9 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { ImportSettingsConfigurationDialogComponent } from './import-settings-configuration-dialog/import-settings-configuration-dialog.component';
 import { MaterialInputComponent } from './material-components/input/input.component';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import { DatapointMappingsConfigurationDialogComponent } from './datapoint-mappings-configuration-dialog/datapoint-mappings-configuration-dialog.component';
+import { MatRippleModule } from '@angular/material/core';
+import { MatTabsModule } from '@angular/material/tabs';
 
 @NgModule({
   declarations: [
@@ -42,7 +45,8 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
     DefaultWindowComponent,
     AccountsComponent,
     ImportSettingsConfigurationDialogComponent,
-    MaterialInputComponent
+    MaterialInputComponent,
+    DatapointMappingsConfigurationDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -65,7 +69,9 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
     GridsterModule,
     MatExpansionModule,
     MatDialogModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatRippleModule,
+    MatTabsModule
   ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]

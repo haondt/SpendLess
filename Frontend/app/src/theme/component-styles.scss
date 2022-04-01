@@ -5,6 +5,7 @@
 @use "../app/login/_login.component.scss" as login;
 @use "../app/nav/_nav.component.scss" as nav;
 @use "../app/accounts/_accounts.component.scss" as accounts;
+@use "../app/datapoint-mappings-configuration-dialog/_datapoint-mappings-configuration-dialog.component.scss" as dp-mapping-dialog;
 
 @mixin theme($theme){
     /* angular material styles */
@@ -16,4 +17,5 @@
     @include login.theme($theme);
     @include nav.theme($theme);
     @include accounts.theme($theme);
+    @include dp-mapping-dialog.theme($theme);
 }

@@ -1,0 +1,30 @@
+
+@use 'sass:map';
+@use "@angular/material" as mat;
+
+@mixin theme($theme){
+  $p: map.get($theme, primary);
+  $primary: mat.get-color-from-palette($p);
+  $primary-contrast: mat.get-color-from-palette($p, default-contrast);
+  $primary-darker: mat.get-color-from-palette($p, darker);
+  $a: map.get($theme, accent);
+  $accent: mat.get-color-from-palette($a);
+
+    span.focus-overlay {
+        background-color: $primary-contrast;
+    }
+
+    .dp-list-scroller {
+        background-color: $primary-darker;
+        border-top: 2px solid $primary-darker;
+        border-bottom: 2px solid $primary-darker;
+    }
+
+    .dp-list-item {
+        background-color: $primary;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: $primary-darker;
+    }
+}

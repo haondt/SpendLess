@@ -56,7 +56,7 @@ namespace SpendLess.API
 
             services.AddCors(o => o.AddPolicy(CORS_POLICY, builder =>
             {
-                builder.SetIsOriginAllowed(s => { Console.WriteLine(s); return true; }) // http://localhost:4200
+                builder.SetIsOriginAllowed(s => s == @"http://localhost:4200")
                 .AllowAnyMethod()
                 .AllowCredentials()
                 .AllowAnyHeader();
