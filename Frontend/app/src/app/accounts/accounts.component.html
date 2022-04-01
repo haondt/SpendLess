@@ -5,16 +5,16 @@
             <h1>Manage Accounts</h1>
         </div>
         <mat-card>
-            <button type="button" color="accent" class="header-button" (click)="addAccount()" mat-raised-button>
-                <span>New Account</span>
-            </button>
             <span class="header-spacer"></span>
+            <button *ngIf="dirty" type="button" (click)="resetAccounts()" color="warn" class="header-button" mat-button>
+                <span>Discard Changes</span>
+            </button>
             <button *ngIf="dirty" (click)="setAccounts()" color="affirmative" type="button"
                 class="header-button affirmative" mat-button>
                 <span>Save Changes</span>
             </button>
-            <button *ngIf="dirty" type="button" (click)="resetAccounts()" color="warn" class="header-button" mat-button>
-                <span>Discard Changes</span>
+            <button type="button" color="accent" class="header-button" (click)="addAccount()" mat-raised-button>
+                <span>New Account</span>
             </button>
         </mat-card>
         <mat-accordion class="accounts-headers-align" multi>

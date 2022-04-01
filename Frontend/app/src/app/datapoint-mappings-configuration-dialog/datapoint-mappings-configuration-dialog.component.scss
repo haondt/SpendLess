@@ -104,3 +104,14 @@ div.mat-tab-body-wrapper {
     flex-direction: column;
 }
 
+
+.dp-list-header {
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
+}
+
+.dp-list-header mat-form-field {
+    flex-grow: 1;
+    max-width: 600px;
+}

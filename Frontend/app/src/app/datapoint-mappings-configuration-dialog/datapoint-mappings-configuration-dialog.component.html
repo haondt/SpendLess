@@ -5,15 +5,16 @@
             <div class="tab">
 
                 <div class="dp-list-header">
-
+                    <mat-icon>search</mat-icon>
                     <mat-form-field appearance="legacy" floatLabel="never">
                         <input matInput type="text" placeholder="Search">
                         <button matSuffix mat-icon-button>
                             <mat-icon>close</mat-icon>
                         </button>
                     </mat-form-field>
-                    <button matSuffix mat-icon-button (click)="addMapping()">
-                        <mat-icon>add</mat-icon>
+                    <span class="spacer"></span>
+                    <button type="button" color="accent" (click)="addMapping()" mat-raised-button>
+                        <span>New mapping</span>
                     </button>
                 </div>
 
@@ -40,6 +41,20 @@
                     <button matSuffix mat-icon-button (click)="returnToList()">
                         <mat-icon>arrow_back</mat-icon>
                     </button>
+                    <div>
+                        <form>
+                            <mat-radio-group>
+                                <mat-radio-button value="always">Always activate this rule</mat-radio-button>
+                                <mat-radio-button value="condition">Only activate this rule when condition is met</mat-radio-button>
+                            </mat-radio-group>
+
+                            <label>Column</label>
+                            <mat-form-field>
+                                <input matInput type="number" placeholder="Column number">
+                            </mat-form-field>
+                        </form>
+                        <mat-divider></mat-divider>
+                    </div>
             </div>
         </div>
     </div>
