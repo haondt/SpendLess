@@ -8,7 +8,123 @@ import { Observable, Subject } from "rxjs";
 
 
 export interface IMaterialInputControl {
+    type: string;
+    group: FormGroup;
+    invalid: boolean;
+    restrictInput(value: string): string;
+    setFieldValue(value: any): void;
+    getRealValue(): any;
+    empty(): boolean;
+    disable(): void;
+    enable(): void;
+}
 
+export class CurrencyInputControl implements IMaterialInputControl {
+    type = 'currency';
+    group: FormGroup;
+    get invalid(): boolean {
+        return this.group.invalid;
+    }
+
+    constructor(){
+        this.group = new FormGroup({
+            formControl: new FormControl()
+        })
+    }
+
+    restrictInput(value: string): string{
+        let regex = /^-?[0-9]*(?:\.[0-9]{0,2})?/;
+        regex = new RegExp(regex);
+        let match = regex.exec(value);
+        if(match){
+            return match[0];
+        }
+        return "";
+    }
+
+    setFieldValue(value: any): void {
+        value = value || 0;
+        let fieldValue = Number(value).toFixed(2);
+        this.group.setValue({formControl: fieldValue});
+    }
+
+    getRealValue(): any {
+        if (this.group.valid){
+            let v = parseFloat(this.group.controls['formControl'].value);
+            if (v) {
+                return v;
+            }
+            return 0;
+        }
+        return 0;
+    }
+
+    empty(): boolean {
+        let n = this.group.controls['formControl'].value;
+        return !n;
+    }
+
+    enable(): void {
+        this.group.enable();
+    }
+
+    disable(): void {
+        this.group.disable();
+    }
+}
+
+export class IntegerInputControl implements IMaterialInputControl {
+    type = 'integer';
+    group: FormGroup;
+    get invalid(): boolean {
+        return this.group.invalid;
+    }
+
+    constructor(){
+        this.group = new FormGroup({
+            formControl: new FormControl()
+        })
+    }
+
+    restrictInput(value: string): string{
+        let regex = /^[0-9]*/;
+        regex = new RegExp(regex);
+        let match = regex.exec(value);
+        if(match){
+            return match[0];
+        }
+        return "";
+    }
+
+    setFieldValue(value: any): void {
+        value = value || 0;
+        let fieldValue = Number(value).toFixed(0);
+        this.group.setValue({formControl: fieldValue});
+    }
+
+    getRealValue(): any {
+        if (this.group.valid){
+            let v = parseInt(this.group.controls['formControl'].value);
+            if (v) {
+                return v;
+            }
+            return 0;
+        }
+        return 0;
+    }
+
+    empty(): boolean {
+        let n = this.group.controls['formControl'].value;
+        return !n;
+    }
+
+    enable(): void {
+        this.group.enable();
+    }
+
+    disable(): void {
+        this.group.disable();
+    }
 }
 
 @Component({
@@ -22,11 +138,12 @@ export interface IMaterialInputControl {
     }
 })
 export class MaterialInputComponent implements MatFormFieldControl<any>, OnDestroy, ControlValueAccessor {
-    group: FormGroup;
+    inputControl : IMaterialInputControl;
 
     constructor(
         // @angular/forms control that is bound to this element
         @Attribute('type') public type: string,
+
         @Optional() @Self() public ngControl: NgControl,
         private _focusMonitor: FocusMonitor,
         private _elementRef: ElementRef<HTMLElement>,
@@ -34,9 +151,11 @@ export class MaterialInputComponent implements MatFormFieldControl<any>, OnDestr
         ){
         switch(this.type){
             case 'currency': {
-                this.group = new FormGroup({
-                    num: new FormControl('')
-                });
+                this.inputControl = new CurrencyInputControl();
+                break;
+            }
+            case 'integer' : {
+                this.inputControl = new IntegerInputControl();
                 break;
             }
             default: {
@@ -54,48 +173,25 @@ export class MaterialInputComponent implements MatFormFieldControl<any>, OnDestr
     controlType = 'material-input'
 
     /* configure field input interaction */
-    _handleInput(control: AbstractControl, nextElement?: HTMLInputElement): void {
-        this.group.setValue({num: this._restrictInput(this.group.controls['num'].value) });
-        this.autoFocusNext(control, nextElement);
+    _handleInput(): void {
+        this.inputControl.group.setValue({formControl: this.inputControl.restrictInput(this.inputControl.group.controls['formControl'].value) });
         this.onChange(this.value);
     }
 
-    _restrictInput(value: string): string{
-        let regex = /^-?[0-9]*(?:\.[0-9]{0,2})?/;
-        regex = new RegExp(regex);
-        let match = regex.exec(value);
-        if(match){
-            return match[0];
-        }
-        return "";
-    }
-
-    _formatValue(value: any): string {
-        return Number(value).toFixed(2);
-    }
 
     /* configure field value setting */
     @Input()
     get value(): any {
-        if (this.group.valid){
-            let v = parseFloat(this.group.controls['num'].value);
-            if (v) {
-                return v;
-            }
-            return 0;
-        }
-        return 0;
+        return this.inputControl.getRealValue();
     }
     set value(v: any){
-        v = v || 0;
-        this.group.setValue({num: this._formatValue(v)});
+        this.inputControl.setFieldValue(v);
         this.stateChanges.next();
     }
 
     /* control empty state */
     get empty(){
-        let n = this.group.value.value;
-        return !n;
+        return this.inputControl.empty();
     }
 
     /* whether the field should be in the disabled state */
@@ -103,7 +199,7 @@ export class MaterialInputComponent implements MatFormFieldControl<any>, OnDestr
     get disabled(): boolean { return this._disabled; }
     set disabled(value: boolean) {
         this._disabled = coerceBooleanProperty(value);
-        this._disabled ? this.group.disable() : this.group.enable();
+        this._disabled ? this.inputControl.disable() : this.inputControl.enable();
         this.stateChanges.next();
     }
     private _disabled = false;
@@ -156,7 +252,7 @@ export class MaterialInputComponent implements MatFormFieldControl<any>, OnDestr
     }
     onFocusOut(event: FocusEvent){
         if(!this._elementRef.nativeElement.contains(event.relatedTarget as Element)){
-            this.group.setValue({num: this._formatValue(this.value)});
+            this.inputControl.setFieldValue(this.value);
             this.touched = true;
             this.focused = false;
             this.onTouched();
@@ -184,7 +280,7 @@ export class MaterialInputComponent implements MatFormFieldControl<any>, OnDestr
 
     /* whether field is in error state */
     get errorState(): boolean {
-        return this.group.invalid && this.touched;
+        return this.inputControl.invalid && this.touched;
     }
 
     /* event when user clicks on field */
@@ -194,18 +290,6 @@ export class MaterialInputComponent implements MatFormFieldControl<any>, OnDestr
         }
     }
 
-    /* honestly idk */
-    autoFocusNext(control: AbstractControl, nextElement?: HTMLInputElement): void {
-        if (!control.errors && nextElement) {
-          this._focusMonitor.focusVia(nextElement, 'program');
-        }
-      }
-
-      autoFocusPrev(control: AbstractControl, prevElement: HTMLInputElement): void {
-        if (control.value.length < 1) {
-          this._focusMonitor.focusVia(prevElement, 'program');
-        }
-      }
 
     /* MatFormFieldControl<any> */
     setDescribedByIds(ids: string[]): void {

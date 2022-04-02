@@ -43,15 +43,43 @@
                     </button>
                     <div>
                         <form>
+
                             <mat-radio-group>
+                                <div class="form-row">
                                 <mat-radio-button value="always">Always activate this rule</mat-radio-button>
                                 <mat-radio-button value="condition">Only activate this rule when condition is met</mat-radio-button>
+                            </div>
                             </mat-radio-group>
+                            <div class="form-row">
+
 
                             <label>Column</label>
-                            <mat-form-field>
-                                <input matInput type="number" placeholder="Column number">
+                            <mat-form-field appearance="standard">
+                                <material-input type="integer" placeholder="Column number"></material-input>
                             </mat-form-field>
+                            <mat-form-field appearance="standard">
+                                <mat-label>Select</mat-label>
+                                <mat-select>
+                                    <mat-option value="is_not_empty">is not empty</mat-option>
+                                    <mat-option value="is_empty">is empty</mat-option>
+                                    <mat-option value="is">is</mat-option>
+                                    <mat-option value="matches_regular_expression">matches regular expression</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <mat-form-field appearance="standard">
+                                <input matInput placeholder="Enter regular expression">
+                            </mat-form-field>
+                            <mat-form-field appearance="standard">
+                                <mat-label>Select</mat-label>
+                                <mat-select>
+                                    <mat-option value="less_than">&lt;</mat-option>
+                                    <mat-option value="less_than_or_equal">&lt;=</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <mat-form-field appearance="standard">
+                                <input matInput placeholder="Value">
+                            </mat-form-field>
+                            </div>
                         </form>
                         <mat-divider></mat-divider>
                     </div>

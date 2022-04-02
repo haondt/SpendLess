@@ -115,3 +115,11 @@ div.mat-tab-body-wrapper {
     flex-grow: 1;
     max-width: 600px;
 }
+
+.form-row {
+    column-gap: 10px;
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}

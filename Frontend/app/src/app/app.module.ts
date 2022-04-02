@@ -35,6 +35,7 @@ import { DatapointMappingsConfigurationDialogComponent } from './datapoint-mappi
 import { MatRippleModule } from '@angular/material/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
 
 @NgModule({
   declarations: [
@@ -73,7 +74,8 @@ import { MatRadioModule } from '@angular/material/radio';
     MatCheckboxModule,
     MatRippleModule,
     MatTabsModule,
-    MatRadioModule
+    MatRadioModule,
+    MatSelectModule
   ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]
