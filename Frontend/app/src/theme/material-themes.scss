@@ -5,14 +5,19 @@
 @use "./additional-themes.scss" as additional-themes;
 @use "./component-styles.scss" as components;
 
+
 /* default theme */
-$theme: mat.define-light-theme(palettes.$primary-default, palettes.$secondary-default);
-@include additional-styles.theme(map.merge($theme, additional-themes.get-theme(default)));
-@include components.theme($theme);
+.default-theme {
+    $theme: mat.define-light-theme(palettes.$primary-default, palettes.$secondary-default);
+    $theme: map.merge($theme, additional-themes.get-theme(dark-gold));
+    @include components.theme($theme);
+    @include additional-styles.theme($theme);
+}
 
 /* dark themes */
-.dark-gold {
+.dark-gold-theme {
     $theme: mat.define-dark-theme(palettes.$purple-black, palettes.$dark-gold, palettes.$mild-red);
-    @include additional-styles.theme(map.merge($theme, additional-themes.get-theme(dark-gold)));
+    $theme: map.merge($theme, additional-themes.get-theme(dark-gold));
     @include components.theme($theme);
+    @include additional-styles.theme($theme);
 }

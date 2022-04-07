@@ -38,21 +38,21 @@
                 </div>
             </div>
             <div class="tab">
-                    <button matSuffix mat-icon-button (click)="returnToList()">
-                        <mat-icon>arrow_back</mat-icon>
-                    </button>
-                    <div>
-                        <form>
+                <button matSuffix mat-icon-button (click)="returnToList()">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+                <div>
+                    <form [formGroup]="editMappingFormGroup">
 
-                            <mat-radio-group>
-                                <div class="form-row">
-                                <mat-radio-button value="always">Always activate this rule</mat-radio-button>
-                                <mat-radio-button value="condition">Only activate this rule when condition is met</mat-radio-button>
-                            </div>
-                            </mat-radio-group>
+                        <mat-radio-group>
                             <div class="form-row">
+                                <mat-radio-button value="always">Always activate this rule</mat-radio-button>
+                                <mat-radio-button value="condition">Only activate this rule when condition is met
+                                </mat-radio-button>
+                            </div>
+                        </mat-radio-group>
 
-
+                        <div class="form-row">
                             <label>Column</label>
                             <mat-form-field appearance="standard">
                                 <material-input type="integer" placeholder="Column number"></material-input>
@@ -60,29 +60,106 @@
                             <mat-form-field appearance="standard">
                                 <mat-label>Select</mat-label>
                                 <mat-select>
-                                    <mat-option value="is_not_empty">is not empty</mat-option>
-                                    <mat-option value="is_empty">is empty</mat-option>
-                                    <mat-option value="is">is</mat-option>
-                                    <mat-option value="matches_regular_expression">matches regular expression</mat-option>
+                                    <mat-option *ngFor="let op of operations">{{op.str}}</mat-option>
                                 </mat-select>
                             </mat-form-field>
                             <mat-form-field appearance="standard">
-                                <input matInput placeholder="Enter regular expression">
+                                <input matInput type="text" placeholder="Enter regular expression"
+                                    formControlName="regexControl" (input)="updateRegexField()">
                             </mat-form-field>
+                            <div class="regex-view">
+                                <pre prism language="regex" #regexView></pre>
+                            </div>
                             <mat-form-field appearance="standard">
                                 <mat-label>Select</mat-label>
                                 <mat-select>
-                                    <mat-option value="less_than">&lt;</mat-option>
-                                    <mat-option value="less_than_or_equal">&lt;=</mat-option>
+                                    <mat-option *ngFor="let cp of comparisons">{{cp.str}}</mat-option>
                                 </mat-select>
                             </mat-form-field>
                             <mat-form-field appearance="standard">
                                 <input matInput placeholder="Value">
                             </mat-form-field>
-                            </div>
-                        </form>
+                        </div>
+
                         <mat-divider></mat-divider>
-                    </div>
+
+
+                        <div class="form-row">
+                        <label class="parser-text">Set datapoint</label>
+
+                        <mat-form-field appearance="standard">
+                            <mat-select placeholder="Select" formControlName="parserDatapointControl" >
+                                <mat-option *ngFor="let item of parserDatapoints | keyvalue" [value]="item.value">{{item.value.viewValue}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="standard">
+                            <mat-select formControlName="parserOperationControl">
+                                <mat-option *ngFor="let item of availableParserOperations" [value]="item">{{item.viewValue}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="standard"
+                            *ngIf="editMappingFormGroup.controls['parserAutocompleteControl'].enabled">
+                            <input type="text" [placeholder]="parserAutocompletePlaceholder" matInput [matAutocomplete]="parserAutocomplete" formControlName="parserAutocompleteControl">
+                            <mat-autocomplete #parserAutocomplete="matAutocomplete" [displayWith]="parserAutocompleteDisplayFunction">
+                                <mat-option *ngFor="let item of parserAutocompleteFilteredOptions" [value]="item">{{ item.viewValue }}</mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                        <span class="parser-text" *ngIf="parserNewVendorString">({{ parserNewVendorString }} will be added as a new vendor)</span>
+                        <span class="parser-text" *ngIf="parserNewCategoryString">({{ parserNewCategoryString }} will be added as a new category)</span>
+
+                        <mat-form-field appearance="standard">
+                            <mat-label>Value</mat-label>
+                            <material-input type="currency"></material-input>
+                            <span matPrefix>$&nbsp;</span>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="standard">
+                            <material-input type="integer" placeholder="Column number"></material-input>
+                        </mat-form-field>
+
+                        <mat-checkbox>Multiply value by -1</mat-checkbox>
+
+                        <mat-form-field>
+                            <mat-label>Choose a date</mat-label>
+                            <input matInput [matDatepicker]="datePicker">
+                            <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
+                            <mat-datepicker #datePicker></mat-datepicker>
+                        </mat-form-field>
+
+                        <label>like</label>
+
+                        <mat-form-field appearance="standard">
+                            <input matInput type="text" placeholder="Date format">
+                        </mat-form-field>
+                        <div class="parser-date-format-view">
+                            <pre>2022-04-02</pre>
+                        </div>
+
+                        <mat-form-field appearance="standard">
+                            <mat-label>Select</mat-label>
+                            <mat-select>
+                                <mat-option>recurring</mat-option>
+                                <mat-option>not recurring</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field appearnace="standard">
+                            <input matInput type="text" placeholder="Description">
+                        </mat-form-field>
+
+                        <mat-form-field appearance="standard">
+                            <input matInput type="text" placeholder="Enter regular expression">
+                        </mat-form-field>
+                        <div class="parser-regex-view">
+                            <pre prism language="regex" #parserRegexView></pre>
+                        </div>
+
+                        </div>
+
+                    </form>
+                </div>
             </div>
         </div>
     </div>

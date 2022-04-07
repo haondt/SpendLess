@@ -1,9 +1,10 @@
 import { FocusMonitor } from "@angular/cdk/a11y";
 import { coerceBooleanProperty } from "@angular/cdk/coercion";
 import { formatNumber } from "@angular/common";
-import { Attribute, Component, ElementRef, HostBinding, Inject, Input, OnDestroy, Optional, Self } from "@angular/core";
+import { AfterViewInit, Attribute, Component, ElementRef, HostBinding, Inject, Input, OnDestroy, Optional, Self, ViewChild } from "@angular/core";
 import { AbstractControl, ControlValueAccessor, FormControl, FormGroup, NgControl } from "@angular/forms";
 import { MatFormField, MatFormFieldControl, MAT_FORM_FIELD } from "@angular/material/form-field";
+import { highlight, languages } from "prismjs";
 import { Observable, Subject } from "rxjs";
 
 
@@ -17,6 +18,7 @@ export interface IMaterialInputControl {
     empty(): boolean;
     disable(): void;
     enable(): void;
+    onChange(): void;
 }
 
 export class CurrencyInputControl implements IMaterialInputControl {
@@ -70,6 +72,10 @@ export class CurrencyInputControl implements IMaterialInputControl {
 
     disable(): void {
         this.group.disable();
+    }
+
+    onChange(): void {
+
     }
 }
 
@@ -125,7 +131,12 @@ export class IntegerInputControl implements IMaterialInputControl {
     disable(): void {
         this.group.disable();
     }
+
+    onChange(): void {
+
+    }
 }
+
 
 @Component({
     selector: 'material-input',
@@ -137,8 +148,9 @@ export class IntegerInputControl implements IMaterialInputControl {
         '[id]': 'id'
     }
 })
-export class MaterialInputComponent implements MatFormFieldControl<any>, OnDestroy, ControlValueAccessor {
+export class MaterialInputComponent implements MatFormFieldControl<any>, OnDestroy, ControlValueAccessor, AfterViewInit {
     inputControl : IMaterialInputControl;
+    @ViewChild('inputElement') inputElement: ElementRef;
 
     constructor(
         // @angular/forms control that is bound to this element
@@ -168,6 +180,11 @@ export class MaterialInputComponent implements MatFormFieldControl<any>, OnDestr
         }
     }
 
+    afterViewInit = () => {};
+    ngAfterViewInit(): void {
+        this.afterViewInit();
+    }
+
 
     /* mat-form-field will add a class based on this type (mat-form-field-type-XYZ) */
     controlType = 'material-input'
@@ -175,6 +192,7 @@ export class MaterialInputComponent implements MatFormFieldControl<any>, OnDestr
     /* configure field input interaction */
     _handleInput(): void {
         this.inputControl.group.setValue({formControl: this.inputControl.restrictInput(this.inputControl.group.controls['formControl'].value) });
+        this.inputControl.onChange();
         this.onChange(this.value);
     }
 

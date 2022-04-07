@@ -8,13 +8,15 @@ import { Component, Inject } from '@angular/core';
 })
 export class AppComponent {
   title = 'app';
-  theme: string = 'dark-gold';
+  // see theme/material-themes.scss for available themes
+  theme: string = 'dark-gold-theme';
+
   constructor(@Inject(DOCUMENT) private document: Document){
-    this.document.body.classList.add(this.theme);
+    this.document.documentElement.classList.add(this.theme);
   }
 
   switchTheme(newTheme: string){
-    this.document.body.classList.replace(this.theme, newTheme);
+    this.document.documentElement.classList.replace(this.theme, newTheme);
     this.theme = newTheme;
   }
 }

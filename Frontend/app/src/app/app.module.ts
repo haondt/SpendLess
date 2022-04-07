@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
@@ -30,12 +29,21 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ImportSettingsConfigurationDialogComponent } from './import-settings-configuration-dialog/import-settings-configuration-dialog.component';
 import { MaterialInputComponent } from './material-components/input/input.component';
-import {MatCheckboxModule} from '@angular/material/checkbox';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DatapointMappingsConfigurationDialogComponent } from './datapoint-mappings-configuration-dialog/datapoint-mappings-configuration-dialog.component';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+
+import 'prismjs/components/prism-css';
+import 'prismjs/components/prism-javascript';
+import 'prismjs/components/prism-typescript';
+import 'prismjs/components/prism-scss';
+import 'prismjs/components/prism-regex';
 
 @NgModule({
   declarations: [
@@ -48,7 +56,7 @@ import { MatSelectModule } from '@angular/material/select';
     AccountsComponent,
     ImportSettingsConfigurationDialogComponent,
     MaterialInputComponent,
-    DatapointMappingsConfigurationDialogComponent
+    DatapointMappingsConfigurationDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -75,7 +83,10 @@ import { MatSelectModule } from '@angular/material/select';
     MatRippleModule,
     MatTabsModule,
     MatRadioModule,
-    MatSelectModule
+    MatSelectModule,
+    MatAutocompleteModule,
+    MatDatepickerModule,
+    MatNativeDateModule
   ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]

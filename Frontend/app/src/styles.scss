@@ -3,8 +3,7 @@
 /* Material styles */
 @use "./theme/material-themes" as themes;
 
+/* other packages */
+@import "~prismjs/themes/prism-solarizedlight.min.css";
 
 @include mat.core();
-
-
-
