@@ -38,45 +38,49 @@
                 </div>
             </div>
             <div class="tab">
-                <button matSuffix mat-icon-button (click)="returnToList()">
-                    <mat-icon>arrow_back</mat-icon>
-                </button>
-                <div>
+                            <div class="form-row">
+                            <span class="spacer"></span>
+                            <button mat-stroked-button color="warn">Delete Mapping</button>
+                            <button mat-stroked-button color="accent">Reset Mapping</button>
+                            <button mat-stroked-button color="affirmative">Save Mapping</button>
+                            </div>
+                <div class="mapping-editor">
                     <form [formGroup]="editMappingFormGroup">
 
-                        <mat-radio-group>
                             <div class="form-row">
                                 <mat-radio-group formControlName="detectorDefaultControl">
                                     <mat-radio-button class="detector-radio-button" value="always">Always activate this rule</mat-radio-button>
                                     <mat-radio-button class="detector-radio-button" value="condition">Only activate this rule when condition is met</mat-radio-button>
                                 </mat-radio-group>
                             </div>
-                        </mat-radio-group>
 
+                        <mat-divider></mat-divider>
 
                         <div class="form-row">
                             <label>Column</label>
                             <mat-form-field appearance="standard" >
                                 <material-input formControlName="detectorColumnControl" type="integer" placeholder="Column number"></material-input>
+                                <mat-hint>Columns are zero indexed</mat-hint>
                             </mat-form-field>
                             <mat-form-field appearance="standard">
-                                <mat-select formControlName="detectorOperationControl" placeholder="Select">
-                                    <mat-option *ngFor="let op of operations">{{op.str}}</mat-option>
+                                <mat-select formControlName="detectorOperationControl">
+                                    <mat-option *ngFor="let op of detectorOperations | keyvalue" [value]="op.value">{{op.value.viewValue}}</mat-option>
                                 </mat-select>
                             </mat-form-field>
-                            <mat-form-field appearance="standard">
+                            <mat-form-field appearance="standard"
+                                *ngIf="editMappingFormGroup.controls['detectorRegexControl'].enabled">
                                 <input matInput type="text" placeholder="Enter regular expression"
                                     formControlName="detectorRegexControl">
                             </mat-form-field>
-                            <div>
+                            <div *ngIf="editMappingFormGroup.controls['detectorRegexControl'].enabled">
                                 <pre prism language="regex" #detectorRegexView></pre>
                             </div>
-                            <mat-form-field appearance="standard">
-                                <mat-select formControlName="detectorComparisonControl" placeholder="select">
-                                    <mat-option *ngFor="let cp of comparisons">{{cp.str}}</mat-option>
+                            <mat-form-field appearance="standard" *ngIf="editMappingFormGroup.controls['detectorComparisonControl'].enabled">
+                                <mat-select formControlName="detectorComparisonControl" placeholder="Select">
+                                    <mat-option *ngFor="let cp of comparisons | keyvalue" [value]="cp.value">{{cp.value.viewValue}}</mat-option>
                                 </mat-select>
                             </mat-form-field>
-                            <mat-form-field appearance="standard">
+                            <mat-form-field appearance="standard" *ngIf="editMappingFormGroup.controls['detectorValueControl'].enabled">
                                 <input formControlName="detectorValueControl" matInput placeholder="Value">
                             </mat-form-field>
                         </div>
@@ -122,8 +126,8 @@
 
                             <mat-form-field appearance="standard"
                                 *ngIf="editMappingFormGroup.controls['parserColumnControl'].enabled">
-                                <material-input type="integer" formControlName="parserColumnControl"
-                                    placeholder="Column number"></material-input>
+                                <material-input type="integer" formControlName="parserColumnControl" placeholder="Column number"></material-input>
+                                <mat-hint>Columns are zero indexed</mat-hint>
                             </mat-form-field>
 
                             <mat-checkbox formControlName="parserCheckboxControl"
@@ -173,6 +177,8 @@
     </div>
 </div>
 <div mat-dialog-actions align="end">
+    <div *ngIf="tabOffset === '0'">
     <button mat-button mat-dialog-close>Cancel</button>
     <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Confirm</button>
+    </div>
 </div>

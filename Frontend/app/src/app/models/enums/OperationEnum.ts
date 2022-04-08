@@ -1,14 +1,14 @@
 class Operation {
     id: Number;
-    str: string;
+    viewValue: string;
 }
 
-const Operations: Operation[] = [
-    { id: 0, str: "is not empty"},
-    { id: 1, str: "is empty"},
-    { id: 2, str: "is"},
-    { id: 3, str: "matches regular expression"},
-]
+const Operations: { [key: string]: { id: number, viewValue: string } } = {
+    isNotEmpty: { id: 0, viewValue: "is not empty"},
+    isEmpty: {id: 1, viewValue: "is empty"},
+    is: { id: 2, viewValue: "is"},
+    matchesRegularExpression: { id: 3, viewValue: "matches regular expression"},
+}
 
 export {
     Operation,

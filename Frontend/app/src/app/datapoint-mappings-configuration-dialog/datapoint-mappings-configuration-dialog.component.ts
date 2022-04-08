@@ -4,7 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { highlight, languages } from "prismjs";
 import { tap } from "rxjs";
 import { TransactionDatapointMappingModel } from "../models/data/TransactionDatapointMapping";
-import { Comparsions } from "../models/enums/ComparisonEnum";
+import { Comparisons } from "../models/enums/ComparisonEnum";
 import { Operation, Operations } from "../models/enums/OperationEnum";
 
 
@@ -21,8 +21,8 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
     // offset value for sliding tabs
     tabOffset = "0";
 
-    operations = Operations;
-    comparisons = Comparsions;
+    detectorOperations = Operations;
+    comparisons = Comparisons;
     parserDatapoints: { [key: string]: { id: number, viewValue: string } } = {
         vendor: { id: 0, viewValue: "Vendor" },
         value: { id: 1, viewValue: "Value" },
@@ -77,9 +77,9 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
 
         this.editMappingFormGroup = new FormGroup({
             /* detector controls */
-            detectorDefaultControl: new FormControl(),
+            detectorDefaultControl: new FormControl('always', {initialValueIsDefault: true}),
             detectorColumnControl: new FormControl(),
-            detectorOperationControl: new FormControl(),
+            detectorOperationControl: new FormControl(this.detectorOperations['isNotEmpty'], {initialValueIsDefault: true}),
             detectorRegexControl: new FormControl(),
             detectorComparisonControl: new FormControl(),
             detectorValueControl: new FormControl(),
@@ -277,11 +277,38 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
                         this.disableDetectorRow();
                         break;
                     case 'condition':
-                        this.enableDetectorRow();
+                        this.editMappingFormGroup.controls['detectorColumnControl'].enable();
+                        this.editMappingFormGroup.controls['detectorOperationControl'].enable();
                         break;
                 }
             }
         })).subscribe();
+
+        this.editMappingFormGroup.controls['detectorOperationControl'].valueChanges.pipe(tap(v => {
+            if (this.ignoreEvents){ return; }
+
+            this.editMappingFormGroup.controls['detectorRegexControl'].reset();
+            this.editMappingFormGroup.controls['detectorRegexControl'].disable();
+
+            this.editMappingFormGroup.controls['detectorComparisonControl'].reset();
+            this.editMappingFormGroup.controls['detectorComparisonControl'].disable();
+
+            this.editMappingFormGroup.controls['detectorValueControl'].reset();
+            this.editMappingFormGroup.controls['detectorValueControl'].disable();
+
+            if (v){
+                switch(v.id){
+                    case Operations['matchesRegularExpression'].id:
+                        this.editMappingFormGroup.controls['detectorRegexControl'].enable();
+                        break;
+                    case Operations['is'].id:
+                        this.editMappingFormGroup.controls['detectorComparisonControl'].enable();
+                        this.editMappingFormGroup.controls['detectorValueControl'].enable();
+                        break;
+                }
+            }
+        })).subscribe();
+
 
     }
 
@@ -350,11 +377,4 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
         this.editMappingFormGroup.controls['detectorValueControl'].disable();
     }
 
-    enableDetectorRow(){
-        this.editMappingFormGroup.controls['detectorColumnControl'].enable();
-        this.editMappingFormGroup.controls['detectorOperationControl'].enable();
-        this.editMappingFormGroup.controls['detectorRegexControl'].enable();
-        this.editMappingFormGroup.controls['detectorComparisonControl'].enable();
-        this.editMappingFormGroup.controls['detectorValueControl'].enable();
-    }
 }

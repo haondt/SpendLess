@@ -13,12 +13,14 @@
     }
 
     /* Material buttons */
-    button[mat-button][color="affirmative"] {
+    button[mat-button][color="affirmative"],
+    button[mat-stroked-button][color="affirmative"] {
         background-color: transparent;
         color: $affirmative;
     }
 
-    button[mat-button][color="affirmative"] span.mat-button-focus-overlay {
+    button[mat-button][color="affirmative"] span.mat-button-focus-overlay,
+    button[mat-stroked-button][color="affirmative"] span.mat-button-focus-overlay {
         background-color: $affirmative;
 
     }

@@ -1,18 +1,18 @@
 class Comparison {
     id: Number;
-    str: string;
+    viewValue: string;
 }
 
-const Comparsions: Comparison[] = [
-    { id: 0, str: "<"},
-    { id: 1, str: "<="},
-    { id: 2, str: ">"},
-    { id: 3, str: ">="},
-    { id: 4, str: "="},
-    { id: 5, str: "≠"}
-]
+const Comparisons: { [key: string]: { id: number, viewValue: string } } = {
+    lt: { id: 0, viewValue: "<"},
+    lte: { id: 1, viewValue: "<="},
+    gt: { id: 2, viewValue: ">"},
+    gte: { id: 3, viewValue: ">="},
+    e: { id: 4, viewValue: "="},
+    ne: { id: 5, viewValue: "≠"}
+}
 
 export {
     Comparison,
-    Comparsions
+    Comparisons
 }
