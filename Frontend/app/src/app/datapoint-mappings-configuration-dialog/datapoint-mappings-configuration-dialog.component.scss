@@ -119,11 +119,22 @@ div.mat-tab-body-wrapper {
 .form-row {
     column-gap: 10px;
     display: flex;
-    align-items: center;
+    align-items: baseline;
     margin-top: 5px;
     margin-bottom: 5px;
+    padding:10px;
 }
 
 .parser-text {
     white-space: nowrap;
+}
+
+.regex-view {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.mat-radio-group {
+    display: flex;
+    column-gap: 10px;
 }

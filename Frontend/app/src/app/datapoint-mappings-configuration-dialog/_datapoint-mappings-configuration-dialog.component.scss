@@ -27,4 +27,8 @@
     ::-webkit-scrollbar-track {
         background: $primary-darker;
     }
+
+    .regex-view {
+        border: 1px solid $primary-contrast;
+    }
 }

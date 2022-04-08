@@ -103,9 +103,12 @@ export class IntegerInputControl implements IMaterialInputControl {
     }
 
     setFieldValue(value: any): void {
-        value = value || 0;
-        let fieldValue = Number(value).toFixed(0);
-        this.group.setValue({formControl: fieldValue});
+        if (value){
+            let fieldValue = Number(value).toFixed(0);
+            this.group.setValue({formControl: fieldValue});
+        } else {
+            this.group.setValue({formControl: value});
+        }
     }
 
     getRealValue(): any {
@@ -114,9 +117,9 @@ export class IntegerInputControl implements IMaterialInputControl {
             if (v) {
                 return v;
             }
-            return 0;
+            return null;
         }
-        return 0;
+        return null;
     }
 
     empty(): boolean {
@@ -221,6 +224,10 @@ export class MaterialInputComponent implements MatFormFieldControl<any>, OnDestr
         this.stateChanges.next();
     }
     private _disabled = false;
+
+    setDisabledState(disabled: boolean){
+        this.disabled = disabled;
+    }
 
     /* placeholder */
     @Input()

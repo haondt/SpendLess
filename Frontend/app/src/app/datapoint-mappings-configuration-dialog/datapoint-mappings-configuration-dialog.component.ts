@@ -45,21 +45,21 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
         { id: "4E8E7444-500D-4C64-B576-5A3C73F67F2A", viewValue: "Costco", isNew: false }
     ];
 
-    parserNewVendorString: string = "";
-
     parserCategories: { id: string, viewValue: string, isNew: boolean }[] = [
         { id: "AASDASD", viewValue: "Category A", isNew: false },
         { id: "BBSDBSD", viewValue: "Category B", isNew: false },
     ];
 
-    parserNewCategoryString: string = "";
-
     parserAutocompleteOptions: {id: string, viewValue: string, isNew: boolean }[] = [];
     parserAutocompleteFilteredOptions: {id: string, viewValue: string, isNew: boolean }[] = [];
     parserAutocompletePlaceholder: string;
+    parserNewAutocompleteString: string = "";
+
+    parserCheckboxString: string = "";
 
 
-    @ViewChild('regexView') regexView: ElementRef;
+    @ViewChild('detectorRegexView') detectorRegexView: ElementRef;
+    @ViewChild('parserRegexView') parserRegexView: ElementRef;
 
     constructor(@Inject(MAT_DIALOG_DATA) private data: { datapointMappings: TransactionDatapointMappingModel[] },
         private dialogRef: MatDialogRef<DatapointMappingsConfigurationDialogComponent>) {
@@ -77,13 +77,27 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
 
         this.editMappingFormGroup = new FormGroup({
             /* detector controls */
-            regexControl: new FormControl(),
+            detectorDefaultControl: new FormControl(),
+            detectorColumnControl: new FormControl(),
+            detectorOperationControl: new FormControl(),
+            detectorRegexControl: new FormControl(),
+            detectorComparisonControl: new FormControl(),
+            detectorValueControl: new FormControl(),
 
             /* parser controls */
             parserDatapointControl: new FormControl('', {initialValueIsDefault: true}),
             parserOperationControl: new FormControl(this.parserOperations['is'], {initialValueIsDefault: true}),
             parserAutocompleteControl: new FormControl(''),
+            parserCurrencyControl: new FormControl(0, {initialValueIsDefault: true}),
+            parserColumnControl: new FormControl(),
+            parserCheckboxControl: new FormControl(false, {initialValueIsDefault: true}),
+            parserDatepickerControl: new FormControl(),
+            parserRecurringControl: new FormControl('recurring', {initialValueIsDefault: true}),
+            parserTextControl: new FormControl(),
+            parserRegexControl: new FormControl(),
         });
+
+        // parser setup
 
         this.editMappingFormGroup.controls['parserDatapointControl'].valueChanges.pipe(tap(v => {
             if (this.ignoreEvents){ return; }
@@ -120,11 +134,36 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
         this.editMappingFormGroup.controls['parserOperationControl'].valueChanges.pipe(tap(v => {
             if (this.ignoreEvents){ return; }
 
+            let oldIgnoreEvents = this.ignoreEvents;
             this.ignoreEvents = true;
+
             this.editMappingFormGroup.controls['parserAutocompleteControl'].reset();
-            this.parserNewVendorString = '';
             this.editMappingFormGroup.controls['parserAutocompleteControl'].disable();
-            this.ignoreEvents = false;
+            this.parserNewAutocompleteString = '';
+
+            this.editMappingFormGroup.controls['parserCurrencyControl'].reset();
+            this.editMappingFormGroup.controls['parserCurrencyControl'].disable();
+
+            this.editMappingFormGroup.controls['parserColumnControl'].reset();
+            this.editMappingFormGroup.controls['parserColumnControl'].disable();
+
+            this.editMappingFormGroup.controls['parserCheckboxControl'].reset();
+            this.editMappingFormGroup.controls['parserCheckboxControl'].disable();
+
+            this.editMappingFormGroup.controls['parserDatepickerControl'].reset();
+            this.editMappingFormGroup.controls['parserDatepickerControl'].disable();
+
+            this.editMappingFormGroup.controls['parserRecurringControl'].reset();
+            this.editMappingFormGroup.controls['parserRecurringControl'].disable();
+
+            this.editMappingFormGroup.controls['parserTextControl'].reset();
+            this.editMappingFormGroup.controls['parserTextControl'].disable();
+
+            this.editMappingFormGroup.controls['parserRegexControl'].reset();
+            this.editMappingFormGroup.controls['parserRegexControl'].disable();
+
+            this.ignoreEvents = oldIgnoreEvents;
+
             switch (this.editMappingFormGroup.controls['parserDatapointControl'].value.id){
                 case this.parserDatapoints['vendor'].id:
                     this.parserAutocompletePlaceholder = 'Vendor';
@@ -136,6 +175,46 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
                     this.parserAutocompleteOptions = this.parserCategories;
                     this.editMappingFormGroup.controls['parserAutocompleteControl'].enable();
                     break;
+                case this.parserDatapoints['value'].id:
+                    switch(v.id){
+                        case this.parserOperations['is'].id:
+                            this.editMappingFormGroup.controls['parserCurrencyControl'].enable();
+                            break;
+                        case this.parserOperations['parseColumn'].id:
+                            this.editMappingFormGroup.controls['parserColumnControl'].enable();
+                            this.editMappingFormGroup.controls['parserCheckboxControl'].enable();
+                            this.parserCheckboxString = "Multiply value by -1";
+                            break;
+                    }
+                    break;
+                case this.parserDatapoints['date'].id:
+                    switch(v.id){
+                        case this.parserOperations['is'].id:
+                            this.editMappingFormGroup.controls['parserDatepickerControl'].enable();
+                            break;
+                        case this.parserOperations['parseColumn'].id:
+                            this.editMappingFormGroup.controls['parserColumnControl'].enable();
+                            break;
+                    }
+                    break;
+                case this.parserDatapoints['recurring'].id:
+                    this.editMappingFormGroup.controls['parserRecurringControl'].enable();
+                    break;
+                case this.parserDatapoints['description'].id:
+                    switch(v.id){
+                        case this.parserOperations['is'].id:
+                            this.editMappingFormGroup.controls['parserTextControl'].enable();
+                            break;
+                        case this.parserOperations['isColumn'].id:
+                            this.editMappingFormGroup.controls['parserColumnControl'].enable();
+                            break;
+                        case this.parserOperations['parseColumn'].id:
+                            this.editMappingFormGroup.controls['parserColumnControl'].enable();
+                            this.editMappingFormGroup.controls['parserRegexControl'].enable();
+                            break;
+                    }
+                    break;
+
             }
         })).subscribe();
 
@@ -150,10 +229,56 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
             }
 
             let option = this.tryMatchParserAutocompleteValue(v, this.parserAutocompleteOptions);
-            this.parserNewVendorString = '';
+            this.parserNewAutocompleteString = '';
             if (option){
                 if (option.isNew){
-                    this.parserNewVendorString = option.viewValue;
+                    this.parserNewAutocompleteString = option.viewValue;
+                }
+            }
+        })).subscribe();
+
+        this.editMappingFormGroup.controls['parserRegexControl'].valueChanges.pipe(tap(v => {
+            if (this.ignoreEvents){ return; }
+
+            if (this.parserRegexView){
+                if (v){
+                    this.parserRegexView.nativeElement.innerHTML = highlight(v, languages['regex'], 'regex');
+                    this.parserRegexView.nativeElement.parentNode.classList.add('regex-view');
+                } else {
+                    this.parserRegexView.nativeElement.innerHTML = '';
+                    this.parserRegexView.nativeElement.parentNode.classList.remove('regex-view');
+                }
+            }
+        })).subscribe();
+
+        // Detector setup
+
+        this.editMappingFormGroup.controls['detectorRegexControl'].valueChanges.pipe(tap(v => {
+            if (this.ignoreEvents){ return; }
+
+            if (this.detectorRegexView){
+                if (v){
+                    this.detectorRegexView.nativeElement.innerHTML = highlight(v, languages['regex'], 'regex');
+                    this.detectorRegexView.nativeElement.parentNode.classList.add('regex-view');
+                } else {
+                    this.detectorRegexView.nativeElement.innerHTML = '';
+                    this.detectorRegexView.nativeElement.parentNode.classList.remove('regex-view');
+                }
+            }
+        })).subscribe();
+
+        this.editMappingFormGroup.controls['detectorDefaultControl'].valueChanges.pipe(tap(v => {
+            if (this.ignoreEvents){ return; }
+
+            if (v){
+                switch (v){
+                    case 'always':
+                        this.resetDetectorRow();
+                        this.disableDetectorRow();
+                        break;
+                    case 'condition':
+                        this.enableDetectorRow();
+                        break;
                 }
             }
         })).subscribe();
@@ -193,6 +318,7 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
     ngOnInit(): void {
         this.editMappingFormGroup.controls['parserOperationControl'].disable();
         this.editMappingFormGroup.controls['parserAutocompleteControl'].disable();
+        this.editMappingFormGroup.controls['detectorDefaultControl'].setValue('always');
     }
 
     /* mapping list */
@@ -208,23 +334,27 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
         this.tabOffset = "0";
     }
 
-    updateRegexField() {
-        this.regexView.nativeElement.innerHTML = highlight(this.editMappingFormGroup.controls['regexControl'].value, languages['regex'], 'regex');
+    resetDetectorRow(){
+        this.editMappingFormGroup.controls['detectorColumnControl'].reset();
+        this.editMappingFormGroup.controls['detectorOperationControl'].reset();
+        this.editMappingFormGroup.controls['detectorRegexControl'].reset();
+        this.editMappingFormGroup.controls['detectorComparisonControl'].reset();
+        this.editMappingFormGroup.controls['detectorValueControl'].reset();
     }
 
-    /* edit mapping } */
-
-    clearDetector(){
-
+    disableDetectorRow(){
+        this.editMappingFormGroup.controls['detectorColumnControl'].disable();
+        this.editMappingFormGroup.controls['detectorOperationControl'].disable();
+        this.editMappingFormGroup.controls['detectorRegexControl'].disable();
+        this.editMappingFormGroup.controls['detectorComparisonControl'].disable();
+        this.editMappingFormGroup.controls['detectorValueControl'].disable();
     }
 
-    disableDetectorCondition(){
-
+    enableDetectorRow(){
+        this.editMappingFormGroup.controls['detectorColumnControl'].enable();
+        this.editMappingFormGroup.controls['detectorOperationControl'].enable();
+        this.editMappingFormGroup.controls['detectorRegexControl'].enable();
+        this.editMappingFormGroup.controls['detectorComparisonControl'].enable();
+        this.editMappingFormGroup.controls['detectorValueControl'].enable();
     }
-
-    enableDetectorCondition(){
-
-    }
-
-
 }

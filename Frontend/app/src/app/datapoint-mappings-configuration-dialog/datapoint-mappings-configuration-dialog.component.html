@@ -46,38 +46,38 @@
 
                         <mat-radio-group>
                             <div class="form-row">
-                                <mat-radio-button value="always">Always activate this rule</mat-radio-button>
-                                <mat-radio-button value="condition">Only activate this rule when condition is met
-                                </mat-radio-button>
+                                <mat-radio-group formControlName="detectorDefaultControl">
+                                    <mat-radio-button class="detector-radio-button" value="always">Always activate this rule</mat-radio-button>
+                                    <mat-radio-button class="detector-radio-button" value="condition">Only activate this rule when condition is met</mat-radio-button>
+                                </mat-radio-group>
                             </div>
                         </mat-radio-group>
 
+
                         <div class="form-row">
                             <label>Column</label>
-                            <mat-form-field appearance="standard">
-                                <material-input type="integer" placeholder="Column number"></material-input>
+                            <mat-form-field appearance="standard" >
+                                <material-input formControlName="detectorColumnControl" type="integer" placeholder="Column number"></material-input>
                             </mat-form-field>
                             <mat-form-field appearance="standard">
-                                <mat-label>Select</mat-label>
-                                <mat-select>
+                                <mat-select formControlName="detectorOperationControl" placeholder="Select">
                                     <mat-option *ngFor="let op of operations">{{op.str}}</mat-option>
                                 </mat-select>
                             </mat-form-field>
                             <mat-form-field appearance="standard">
                                 <input matInput type="text" placeholder="Enter regular expression"
-                                    formControlName="regexControl" (input)="updateRegexField()">
+                                    formControlName="detectorRegexControl">
                             </mat-form-field>
-                            <div class="regex-view">
-                                <pre prism language="regex" #regexView></pre>
+                            <div>
+                                <pre prism language="regex" #detectorRegexView></pre>
                             </div>
                             <mat-form-field appearance="standard">
-                                <mat-label>Select</mat-label>
-                                <mat-select>
+                                <mat-select formControlName="detectorComparisonControl" placeholder="select">
                                     <mat-option *ngFor="let cp of comparisons">{{cp.str}}</mat-option>
                                 </mat-select>
                             </mat-form-field>
                             <mat-form-field appearance="standard">
-                                <input matInput placeholder="Value">
+                                <input formControlName="detectorValueControl" matInput placeholder="Value">
                             </mat-form-field>
                         </div>
 
@@ -85,76 +85,84 @@
 
 
                         <div class="form-row">
-                        <label class="parser-text">Set datapoint</label>
+                            <label class="parser-text">Set datapoint</label>
 
-                        <mat-form-field appearance="standard">
-                            <mat-select placeholder="Select" formControlName="parserDatapointControl" >
-                                <mat-option *ngFor="let item of parserDatapoints | keyvalue" [value]="item.value">{{item.value.viewValue}}</mat-option>
-                            </mat-select>
-                        </mat-form-field>
+                            <mat-form-field appearance="standard">
+                                <mat-select placeholder="Select" formControlName="parserDatapointControl">
+                                    <mat-option *ngFor="let item of parserDatapoints | keyvalue" [value]="item.value">
+                                        {{item.value.viewValue}}</mat-option>
+                                </mat-select>
+                            </mat-form-field>
 
-                        <mat-form-field appearance="standard">
-                            <mat-select formControlName="parserOperationControl">
-                                <mat-option *ngFor="let item of availableParserOperations" [value]="item">{{item.viewValue}}</mat-option>
-                            </mat-select>
-                        </mat-form-field>
+                            <mat-form-field appearance="standard">
+                                <mat-select formControlName="parserOperationControl">
+                                    <mat-option *ngFor="let item of availableParserOperations" [value]="item">
+                                        {{item.viewValue}}</mat-option>
+                                </mat-select>
+                            </mat-form-field>
 
-                        <mat-form-field appearance="standard"
-                            *ngIf="editMappingFormGroup.controls['parserAutocompleteControl'].enabled">
-                            <input type="text" [placeholder]="parserAutocompletePlaceholder" matInput [matAutocomplete]="parserAutocomplete" formControlName="parserAutocompleteControl">
-                            <mat-autocomplete #parserAutocomplete="matAutocomplete" [displayWith]="parserAutocompleteDisplayFunction">
-                                <mat-option *ngFor="let item of parserAutocompleteFilteredOptions" [value]="item">{{ item.viewValue }}</mat-option>
-                            </mat-autocomplete>
-                        </mat-form-field>
-                        <span class="parser-text" *ngIf="parserNewVendorString">({{ parserNewVendorString }} will be added as a new vendor)</span>
-                        <span class="parser-text" *ngIf="parserNewCategoryString">({{ parserNewCategoryString }} will be added as a new category)</span>
+                            <mat-form-field appearance="standard"
+                                *ngIf="editMappingFormGroup.controls['parserAutocompleteControl'].enabled">
+                                <input type="text" [placeholder]="parserAutocompletePlaceholder" matInput
+                                    [matAutocomplete]="parserAutocomplete" formControlName="parserAutocompleteControl">
+                                <mat-autocomplete #parserAutocomplete="matAutocomplete"
+                                    [displayWith]="parserAutocompleteDisplayFunction">
+                                    <mat-option *ngFor="let item of parserAutocompleteFilteredOptions" [value]="item">{{
+                                        item.viewValue }}</mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                            <span class="parser-text" *ngIf="parserNewAutocompleteString">(New!)</span>
 
-                        <mat-form-field appearance="standard">
-                            <mat-label>Value</mat-label>
-                            <material-input type="currency"></material-input>
-                            <span matPrefix>$&nbsp;</span>
-                        </mat-form-field>
+                            <mat-form-field appearance="standard"
+                                *ngIf="editMappingFormGroup.controls['parserCurrencyControl'].enabled">
+                                <material-input type="currency" formControlName="parserCurrencyControl">
+                                </material-input>
+                                <span matPrefix>$&nbsp;</span>
+                            </mat-form-field>
 
-                        <mat-form-field appearance="standard">
-                            <material-input type="integer" placeholder="Column number"></material-input>
-                        </mat-form-field>
+                            <mat-form-field appearance="standard"
+                                *ngIf="editMappingFormGroup.controls['parserColumnControl'].enabled">
+                                <material-input type="integer" formControlName="parserColumnControl"
+                                    placeholder="Column number"></material-input>
+                            </mat-form-field>
 
-                        <mat-checkbox>Multiply value by -1</mat-checkbox>
+                            <mat-checkbox formControlName="parserCheckboxControl"
+                                *ngIf="editMappingFormGroup.controls['parserCheckboxControl'].enabled">
+                                {{ parserCheckboxString }}
+                            </mat-checkbox>
 
-                        <mat-form-field>
-                            <mat-label>Choose a date</mat-label>
-                            <input matInput [matDatepicker]="datePicker">
-                            <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
-                            <mat-datepicker #datePicker></mat-datepicker>
-                        </mat-form-field>
+                            <mat-form-field *ngIf="editMappingFormGroup.controls['parserDatepickerControl'].enabled">
+                                <input formControlName="parserDatepickerControl" matInput [matDatepicker]="datePicker"
+                                    placeholder="Date">
+                                <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
+                                <mat-datepicker #datePicker></mat-datepicker>
+                            </mat-form-field>
 
-                        <label>like</label>
+                            <mat-form-field appearance="standard"
+                                *ngIf="editMappingFormGroup.controls['parserTextControl'].enabled">
+                                <input formControlName="parserTextControl" matInput type="text"
+                                    placeholder="Description">
+                            </mat-form-field>
 
-                        <mat-form-field appearance="standard">
-                            <input matInput type="text" placeholder="Date format">
-                        </mat-form-field>
-                        <div class="parser-date-format-view">
-                            <pre>2022-04-02</pre>
-                        </div>
+                            <mat-form-field appearance="standard"
+                                *ngIf="editMappingFormGroup.controls['parserRecurringControl'].enabled">
+                                <mat-select formControlName="parserRecurringControl" value="recurring">
+                                    <mat-option value="recurring">recurring</mat-option>
+                                    <mat-option value="not recurring">not recurring</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <label *ngIf="editMappingFormGroup.controls['parserRegexControl'].enabled">
+                                like
+                            </label>
 
-                        <mat-form-field appearance="standard">
-                            <mat-label>Select</mat-label>
-                            <mat-select>
-                                <mat-option>recurring</mat-option>
-                                <mat-option>not recurring</mat-option>
-                            </mat-select>
-                        </mat-form-field>
-
-                        <mat-form-field appearnace="standard">
-                            <input matInput type="text" placeholder="Description">
-                        </mat-form-field>
-
-                        <mat-form-field appearance="standard">
-                            <input matInput type="text" placeholder="Enter regular expression">
-                        </mat-form-field>
-                        <div class="parser-regex-view">
-                            <pre prism language="regex" #parserRegexView></pre>
-                        </div>
+                            <mat-form-field appearance="standard"
+                                *ngIf="editMappingFormGroup.controls['parserRegexControl'].enabled">
+                                <input formControlName="parserRegexControl" matInput type="text" placeholder="Enter regular expression">
+                                <mat-hint>First match group</mat-hint>
+                            </mat-form-field>
+                            <div *ngIf="editMappingFormGroup.controls['parserRegexControl'].enabled">
+                                <pre prism language="regex" #parserRegexView></pre>
+                            </div>
 
                         </div>
 

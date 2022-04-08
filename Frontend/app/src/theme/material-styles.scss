@@ -121,8 +121,8 @@
   }
 
   /* card */
- mat-card.mat-card,
- mat-expansion-panel-header {
+  mat-card.mat-card,
+  mat-expansion-panel-header {
     background-color: $primary;
   }
 
@@ -130,7 +130,6 @@
   mat-expansion-panel.mat-expansion-panel {
     background-color: $primary;
   }
-
 
   div.mat-menu-panel {
     background-color: $primary;
@@ -141,7 +140,7 @@
     color: $accent;
   }
 
-  .mat-form-field.mat-focused .mat-form-field-ripple{
+  .mat-form-field.mat-focused .mat-form-field-ripple {
     background-color: $accent;
   }
 
@@ -186,6 +185,10 @@
     border-color: $primary;
   }
 
+  .mat-checkbox-checkmark-path {
+    stroke: $accent-contrast !important;
+  }
+
   /* dropdowns */
   .mat-select-panel {
     background-color: $primary;
@@ -194,8 +197,36 @@
     color: $foreground;
   }
   .mat-select-panel .mat-option.mat-selected:not(.mat-option-multiple) {
-    @if ($primary-contrast){
+    @if ($primary-contrast) {
       background-color: rgba($primary-contrast, 0.04);
+    }
+  }
+
+  /* auto suggestions */
+  .mat-autocomplete-panel .mat-option.mat-selected:not(.mat-active):not(:hover) {
+    background-color: $primary;
+  }
+  .mat-autocomplete-panel {
+    background: $primary;
+  }
+
+  /* calendar */
+  .mat-calendar {
+    background-color: $primary;
+  }
+
+  .mat-datepicker-toggle-active .mat-datepicker-toggle-default-icon {
+    color: $accent;
+  }
+  .mat-calendar-body-selected {
+    background-color: $accent;
+  }
+  @media (hover: hover) {
+    .mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover
+      > .mat-calendar-body-cell-content:not(.mat-calendar-body-selected):not(.mat-calendar-body-comparison-identical) {
+      @if ($accent-lighter) {
+        background-color: rgba($accent-lighter, 0.1);
+      }
     }
   }
 
@@ -203,5 +234,4 @@
   html {
     background-color: black;
   }
-
 }
