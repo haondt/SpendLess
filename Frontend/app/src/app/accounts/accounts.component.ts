@@ -154,13 +154,16 @@ export class AccountsComponent implements OnInit {
   }
 
   openTransactionDatapointMappingConfigurationDialog(account: AccountModel){
+    let data = {datapointMappings: [], newCategories: [], newVendors: [] };
     let dialogRef = this.dialog.open(DatapointMappingsConfigurationDialogComponent, {
-      data : {datapointMappings: []},
+      data : data,
       maxWidth: "100vw"
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result){
+        // create new categories/vendors
+        // replace ids in mappings with those returned by server for categories/vendors
         this.touch();
       }
     });

@@ -1,18 +1,10 @@
-class Comparison {
-    id: Number;
-    viewValue: string;
-}
+import { ViewEnum } from "./ViewEnum"
 
-const Comparisons: { [key: string]: { id: number, viewValue: string } } = {
+export const DetectorComparisons: { [key: string]: ViewEnum } = {
     lt: { id: 0, viewValue: "<"},
     lte: { id: 1, viewValue: "<="},
     gt: { id: 2, viewValue: ">"},
     gte: { id: 3, viewValue: ">="},
     e: { id: 4, viewValue: "="},
     ne: { id: 5, viewValue: "≠"}
-}
-
-export {
-    Comparison,
-    Comparisons
 }

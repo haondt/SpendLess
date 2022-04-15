@@ -22,13 +22,13 @@
                 <div class="dp-list-scroller">
 
                     <div class="dp-list">
-                        <div class="dp-list-item" (click)="editMapping()"
+                        <div class="dp-list-item" (click)="editMapping(datapointMapping)"
                             *ngFor="let datapointMapping of datapointMappings; let last=last; let first=first;"
                             [ngClass]="{'last': last, 'first':first}">
                             <span class="focus-overlay"></span>
                             <div class="dp-list-item-outer-wrapper">
-                                <div class="list-item-wrapper">
-                                    <span matLine>{{ datapointMapping.isDefault }}</span>
+                                <div class="list-item-wrapper" [ngClass]="{'color warn': validateMapping(datapointMapping)}">
+                                    <span matLine>{{ summarizeMapping(datapointMapping) }}</span>
                                     <span class="spacer"></span>
                                     <mat-icon matListIcon>navigate_next</mat-icon>
                                 </div>
@@ -40,9 +40,9 @@
             <div class="tab">
                             <div class="form-row">
                             <span class="spacer"></span>
-                            <button mat-stroked-button color="warn">Delete Mapping</button>
-                            <button mat-stroked-button color="accent">Reset Mapping</button>
-                            <button mat-stroked-button color="affirmative">Save Mapping</button>
+                            <button mat-stroked-button color="warn" (click)="deleteMapping()">Delete Mapping</button>
+                            <button mat-stroked-button color="accent" (click)="discardMappingChanges()">Discard Changes</button>
+                            <button mat-stroked-button color="affirmative" (click)="saveMappingChanges()">Save Mapping</button>
                             </div>
                 <div class="mapping-editor">
                     <form [formGroup]="editMappingFormGroup">
@@ -57,7 +57,7 @@
                         <mat-divider></mat-divider>
 
                         <div class="form-row">
-                            <label>Column</label>
+                            <label>If column</label>
                             <mat-form-field appearance="standard" >
                                 <material-input formControlName="detectorColumnControl" type="integer" placeholder="Column number"></material-input>
                                 <mat-hint>Columns are zero indexed</mat-hint>
@@ -83,13 +83,16 @@
                             <mat-form-field appearance="standard" *ngIf="editMappingFormGroup.controls['detectorValueControl'].enabled">
                                 <input formControlName="detectorValueControl" matInput placeholder="Value">
                             </mat-form-field>
+                            <mat-checkbox formControlName="detectorCheckboxControl" *ngIf="editMappingFormGroup.controls['detectorCheckboxControl'].enabled">
+                                value is numeric
+                            </mat-checkbox>
                         </div>
 
                         <mat-divider></mat-divider>
 
 
                         <div class="form-row">
-                            <label class="parser-text">Set datapoint</label>
+                            <label class="parser-text">Then set datapoint:</label>
 
                             <mat-form-field appearance="standard">
                                 <mat-select placeholder="Select" formControlName="parserDatapointControl">
@@ -132,7 +135,7 @@
 
                             <mat-checkbox formControlName="parserCheckboxControl"
                                 *ngIf="editMappingFormGroup.controls['parserCheckboxControl'].enabled">
-                                {{ parserCheckboxString }}
+                                Multiply value by -1
                             </mat-checkbox>
 
                             <mat-form-field *ngIf="editMappingFormGroup.controls['parserDatepickerControl'].enabled">
@@ -141,6 +144,7 @@
                                 <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
                                 <mat-datepicker #datePicker></mat-datepicker>
                             </mat-form-field>
+
 
                             <mat-form-field appearance="standard"
                                 *ngIf="editMappingFormGroup.controls['parserTextControl'].enabled">

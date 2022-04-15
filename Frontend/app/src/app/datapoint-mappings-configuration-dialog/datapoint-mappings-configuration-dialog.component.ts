@@ -1,11 +1,18 @@
+import { DIR_DOCUMENT_FACTORY } from "@angular/cdk/bidi/dir-document-token";
+import { Parser } from "@angular/compiler";
 import { Component, ElementRef, Inject, OnInit, ViewChild, ViewEncapsulation } from "@angular/core";
+import { TestModuleMetadata } from "@angular/core/testing";
 import { FormControl, FormGroup } from "@angular/forms";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { highlight, languages } from "prismjs";
 import { tap } from "rxjs";
 import { TransactionDatapointMappingModel } from "../models/data/TransactionDatapointMapping";
-import { Comparisons } from "../models/enums/ComparisonEnum";
-import { Operation, Operations } from "../models/enums/OperationEnum";
+import { DetectorComparisons } from "../models/enums/DetectorComparisons";
+import { DetectorOperations } from "../models/enums/DetectorOperations";
+import { ParserDatapoints } from "../models/enums/ParserDatapoints";
+import { ParserOperations } from "../models/enums/ParserOperations";
+import { ViewEnum } from "../models/enums/ViewEnum";
+import { DialogMappingFormComponent, IDialogMappingFormComponent } from "./datapoint-mapping-form-component";
 
 
 @Component({
@@ -15,29 +22,20 @@ import { Operation, Operations } from "../models/enums/OperationEnum";
 })
 export class DatapointMappingsConfigurationDialogComponent implements OnInit {
     datapointMappings: TransactionDatapointMappingModel[];
+    selectedMapping: TransactionDatapointMappingModel | null;
     editMappingFormGroup: FormGroup;
+    rootDetector: IDialogMappingFormComponent;
+    rootParser: IDialogMappingFormComponent;
 
-    private ignoreEvents: boolean = false;
     // offset value for sliding tabs
     tabOffset = "0";
 
-    detectorOperations = Operations;
-    comparisons = Comparisons;
-    parserDatapoints: { [key: string]: { id: number, viewValue: string } } = {
-        vendor: { id: 0, viewValue: "Vendor" },
-        value: { id: 1, viewValue: "Value" },
-        date: { id: 2, viewValue: "Date" },
-        recurring: { id: 3, viewValue: "Recurring" },
-        category: { id: 4, viewValue: "Category" },
-        description: { id: 6, viewValue: "Description" },
-    };
+    detectorOperations = DetectorOperations;
+    comparisons = DetectorComparisons;
+    parserDatapoints = ParserDatapoints;
 
-    parserOperations: { [key: string]: { id: number, viewValue: string } } = {
-        is: { id: 0, viewValue: "is" },
-        isColumn: { id: 1, viewValue: "is column" },
-        parseColumn: { id: 2, viewValue: "parse column" }
-    };
-    availableParserOperations = [ this.parserOperations['is'] ];
+    parserOperations = ParserOperations;
+    availableParserOperations = [ ParserOperations['is'] ];
 
     parserVendors: { id: string, viewValue: string, isNew: boolean }[] = [
         { id: "B7847220-682A-45DB-B44D-D1232F2C7E29", viewValue: "Amazon", isNew: false },
@@ -55,36 +53,25 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
     parserAutocompletePlaceholder: string;
     parserNewAutocompleteString: string = "";
 
-    parserCheckboxString: string = "";
-
-
     @ViewChild('detectorRegexView') detectorRegexView: ElementRef;
     @ViewChild('parserRegexView') parserRegexView: ElementRef;
 
-    constructor(@Inject(MAT_DIALOG_DATA) private data: { datapointMappings: TransactionDatapointMappingModel[] },
+    constructor(@Inject(MAT_DIALOG_DATA) private data: { datapointMappings: TransactionDatapointMappingModel[], newCategories: [], newVendors: [] },
         private dialogRef: MatDialogRef<DatapointMappingsConfigurationDialogComponent>) {
-        this.datapointMappings = [
-            {
-                isDefault: true
-            },
-            {
-                isDefault: false
-            },
-            {
-                isDefault: true
-            },
-        ];
 
-        this.editMappingFormGroup = new FormGroup({
-            /* detector controls */
+            this.datapointMappings = data.datapointMappings;
+
+        let formControls = {
+            // detector controls
             detectorDefaultControl: new FormControl('always', {initialValueIsDefault: true}),
             detectorColumnControl: new FormControl(),
             detectorOperationControl: new FormControl(this.detectorOperations['isNotEmpty'], {initialValueIsDefault: true}),
             detectorRegexControl: new FormControl(),
             detectorComparisonControl: new FormControl(),
             detectorValueControl: new FormControl(),
+            detectorCheckboxControl: new FormControl(false, {initialValueIsDefault: true}),
 
-            /* parser controls */
+            // parser controls
             parserDatapointControl: new FormControl('', {initialValueIsDefault: true}),
             parserOperationControl: new FormControl(this.parserOperations['is'], {initialValueIsDefault: true}),
             parserAutocompleteControl: new FormControl(''),
@@ -95,112 +82,285 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
             parserRecurringControl: new FormControl('recurring', {initialValueIsDefault: true}),
             parserTextControl: new FormControl(),
             parserRegexControl: new FormControl(),
-        });
+        };
 
-        // parser setup
+        this.editMappingFormGroup = new FormGroup(formControls);
 
-        this.editMappingFormGroup.controls['parserDatapointControl'].valueChanges.pipe(tap(v => {
-            if (this.ignoreEvents){ return; }
+        // Detector setup
 
-            this.editMappingFormGroup.controls['parserOperationControl'].reset();
-            if ([
-                this.parserDatapoints['vendor'].id,
-                this.parserDatapoints['recurring'].id,
-                this.parserDatapoints['category'].id
-            ].includes(v.id)){
-                this.ignoreEvents = true;
-                this.editMappingFormGroup.controls['parserOperationControl'].disable();
-                this.ignoreEvents = false;
-            } else {
-                this.ignoreEvents = true;
-                this.editMappingFormGroup.controls['parserOperationControl'].enable();
-                this.ignoreEvents = false;
+        let detectorRegexComponent = new DialogMappingFormComponent<string>(formControls.detectorRegexControl, {
+            setInMapping: (m, s) => m.detectorRegularExpression = s ?? "",
+            getFromMapping: m => m.detectorRegularExpression,
+        })
 
-                if (v.id == this.parserDatapoints['description'].id){
-                    this.availableParserOperations = [
-                        this.parserOperations['is'],
-                        this.parserOperations['isColumn'],
-                        this.parserOperations['parseColumn']
-                    ];
+        formControls.detectorRegexControl.valueChanges.pipe(tap(v => {
+            if (this.detectorRegexView){
+                if (v){
+                    this.detectorRegexView.nativeElement.innerHTML = highlight(v, languages['regex'], 'regex');
+                    this.detectorRegexView.nativeElement.parentNode.classList.add('regex-view');
                 } else {
-                    this.availableParserOperations = [
-                        this.parserOperations['is'],
-                        this.parserOperations['parseColumn']
-                    ];
+                    this.detectorRegexView.nativeElement.innerHTML = '';
+                    this.detectorRegexView.nativeElement.parentNode.classList.remove('regex-view');
                 }
             }
         })).subscribe();
 
-        this.editMappingFormGroup.controls['parserOperationControl'].valueChanges.pipe(tap(v => {
-            if (this.ignoreEvents){ return; }
+        let detectorCheckboxComponent = new DialogMappingFormComponent<boolean>(formControls.detectorCheckboxControl, {
+            setInMapping: (m, s) => m.detectorValueIsNumeric = s ?? false,
+            getFromMapping: m => m.detectorValueIsNumeric
+        });
 
-            let oldIgnoreEvents = this.ignoreEvents;
-            this.ignoreEvents = true;
+        let detectorValueComponent = new DialogMappingFormComponent<string>(formControls.detectorValueControl, {
+            generateSummary: s => s ?? "",
+            setInMapping: (m, s) => m.detectorStringValue = s ?? "",
+            getFromMapping: m => m.detectorStringValue,
+            childSelector: _ => detectorCheckboxComponent
+        });
 
-            this.editMappingFormGroup.controls['parserAutocompleteControl'].reset();
-            this.editMappingFormGroup.controls['parserAutocompleteControl'].disable();
+        let detectorComparisonComponent = new DialogMappingFormComponent<ViewEnum>(formControls.detectorComparisonControl, {
+            generateSummary: s => s?.viewValue ?? "",
+            setInMapping: (m, s) => m.detectorComparison = s?.id ?? -1,
+            getFromMapping: m => this.findItemById(DetectorComparisons, m.detectorComparison),
+            childSelector: _ => detectorValueComponent
+        });
+
+        let detectorOperationComponent = new DialogMappingFormComponent<ViewEnum>(formControls.detectorOperationControl, {
+            generateSummary: s => s ? s.viewValue : "",
+            setInMapping: (m, s) => m.detectorOperation = s?.id ?? -1,
+            getFromMapping: m => this.findItemById(DetectorOperations, m.detectorOperation),
+            childSelector: (p, s) => {
+                if (s){
+                    switch(s.id){
+                        case DetectorOperations['matchesRegularExpression'].id:
+                            return detectorRegexComponent;
+                        case DetectorOperations['is'].id:
+                            return detectorComparisonComponent;
+                    }
+                }
+                return undefined;
+            }
+        });
+
+        let detectorColumnComponent = new DialogMappingFormComponent<number>(formControls.detectorColumnControl, {
+            generateSummary: s => ''+s,
+            setInMapping: (m, s) => m.detectorColumn = s,
+            getFromMapping: m => m.detectorColumn,
+            childSelector: (p, s) => detectorOperationComponent
+        });
+
+        this.rootDetector = new DialogMappingFormComponent<string>(formControls.detectorDefaultControl, {
+            generateSummary: s => s == 'always' ? 'Always' : 'Column',
+            setInMapping: (m, s) => m.isDefault = s == 'always',
+            getFromMapping: m => m.isDefault ? 'always' : 'condition',
+            childSelector: (p, s) => {
+                if (s == 'condition') {
+                    return detectorColumnComponent;
+                }
+                return undefined;
+            }
+        });
+
+        // parser setup
+
+        let parserAutocompleteComponent = new DialogMappingFormComponent<{id: string, viewValue: string, isNew: boolean} | string>(formControls.parserAutocompleteControl, {
+            generateSummary: s => {
+                if (s){
+                    if (typeof(s) == 'string'){
+                        return s;
+                    } else {
+                        return s.viewValue;
+                    }
+                }
+                return "";
+            },
+            setInMapping: (m, s) => {
+                if (s){
+                    let datapoint: ViewEnum | undefined = this.rootParser.getSelection();
+                    if (datapoint){
+                        switch(datapoint.id){
+                            case ParserDatapoints['vendor'].id:
+                                let vendor = this.AddNewVendorIfRequired(s);
+                                if (vendor){
+                                    m.parserStringValue = vendor.id;
+                                }
+                            break;
+                            case ParserDatapoints['category'].id:
+                                let category = this.AddNewCategoryIfRequired(s);
+                                if (category){
+                                    m.parserStringValue = category.id;
+                                }
+                            break;
+                        }
+                    }
+                }
+            },
+            getFromMapping: m => {
+                let datapoint: ViewEnum | undefined = this.rootParser.getSelection();
+                if (datapoint){
+                    switch(datapoint.id){
+                        case ParserDatapoints['vendor'].id:
+                            return this.parserVendors.find(e => e.id == m.parserStringValue);
+                        case ParserDatapoints['category'].id:
+                            return this.parserCategories.find(e => e.id == m.parserStringValue);
+                    }
+                }
+                return undefined;
+            },
+        });
+
+        formControls.parserAutocompleteControl.valueChanges.pipe(tap(v => {
+            let vStr = typeof(v) === 'string' ? v : v?.value;
+            if (vStr == null){
+                this.parserAutocompleteFilteredOptions = this.parserAutocompleteOptions.slice();
+            } else {
+                this.parserAutocompleteFilteredOptions = this.parserAutocompleteOptions.filter(o => o.viewValue.toLowerCase().includes(vStr.toLowerCase()))
+            }
+
+            let option = this.tryMatchParserAutocompleteValue(v, this.parserAutocompleteOptions);
             this.parserNewAutocompleteString = '';
+            if (option){
+                if (option.isNew){
+                    this.parserNewAutocompleteString = option.viewValue;
+                }
+            }
+        })).subscribe();
 
-            this.editMappingFormGroup.controls['parserCurrencyControl'].reset();
-            this.editMappingFormGroup.controls['parserCurrencyControl'].disable();
+        let parserCurrencyComponent = new DialogMappingFormComponent<number>(formControls.parserCurrencyControl, {
+            generateSummary: s => ''+s,
+            setInMapping: (m, s) => m.parserNumericValue = s ?? 0,
+            getFromMapping: m => m.parserNumericValue
+        });
 
-            this.editMappingFormGroup.controls['parserColumnControl'].reset();
-            this.editMappingFormGroup.controls['parserColumnControl'].disable();
+        let parserCheckboxComponent = new DialogMappingFormComponent<boolean>(formControls.parserCheckboxControl, {
+            generateSummary: s => s ? '×-1' : '',
+            setInMapping: (m, s) => m.parserInvertValue = s ?? false,
+            getFromMapping: m => m.parserInvertValue
+        });
 
-            this.editMappingFormGroup.controls['parserCheckboxControl'].reset();
-            this.editMappingFormGroup.controls['parserCheckboxControl'].disable();
+        let parserRegexComponent = new DialogMappingFormComponent<string>( formControls.parserRegexControl, {
+            generateSummary: s => s ?? '',
+            setInMapping: (m, s) => m.parserStringValue = s ?? '',
+            getFromMapping: m => m.parserStringValue,
+            resetValueWhenParentValueChanges: false
+        });
 
-            this.editMappingFormGroup.controls['parserDatepickerControl'].reset();
-            this.editMappingFormGroup.controls['parserDatepickerControl'].disable();
+        formControls.parserRegexControl.valueChanges.pipe(tap(v => {
+            if (this.parserRegexView){
+                if (v){
+                    this.parserRegexView.nativeElement.innerHTML = highlight(v, languages['regex'], 'regex');
+                    this.parserRegexView.nativeElement.parentNode.classList.add('regex-view');
+                } else {
+                    this.parserRegexView.nativeElement.innerHTML = '';
+                    this.parserRegexView.nativeElement.parentNode.classList.remove('regex-view');
+                }
+            }
+        })).subscribe();
 
-            this.editMappingFormGroup.controls['parserRecurringControl'].reset();
-            this.editMappingFormGroup.controls['parserRecurringControl'].disable();
+        let parserColumnComponent = new DialogMappingFormComponent<number>(formControls.parserColumnControl, {
+            generateSummary: s => ''+s,
+            setInMapping: (m, s) => m.parserColumn = s,
+            getFromMapping: m => m.parserColumn,
+            childSelector: (p, s) => {
+                let datapoint: ViewEnum | undefined = p?.parent?.getSelection();
+                let operation: ViewEnum | undefined = p?.getSelection();
+                if (datapoint){
+                    switch(datapoint.id){
+                        case ParserDatapoints['value'].id:
+                            return parserCheckboxComponent;
+                        case ParserDatapoints['description'].id:
+                            if (operation){
+                                if (operation.id == ParserOperations['parseColumn'].id){
+                                    return parserRegexComponent;
+                                }
+                            }
+                    }
+                }
+                return undefined;
+            }
+        });
 
-            this.editMappingFormGroup.controls['parserTextControl'].reset();
-            this.editMappingFormGroup.controls['parserTextControl'].disable();
+        let parserDatepickerComponent = new DialogMappingFormComponent<Date>(formControls.parserDatepickerControl, {
+            generateSummary: s => (<Date>s)?.toLocaleDateString(),
+            setInMapping: (m, s) => m.parserDateTimeValue = (<Date>s)?.toISOString() ?? new Date().toISOString(),
+            getFromMapping: m => m.parserDateTimeValue ? new Date(m.parserDateTimeValue) : undefined
+        });
 
-            this.editMappingFormGroup.controls['parserRegexControl'].reset();
-            this.editMappingFormGroup.controls['parserRegexControl'].disable();
+        let parserRecurringComponent = new DialogMappingFormComponent<string>(formControls.parserRecurringControl, {
+            generateSummary: s => s ?? 'recurring',
+            setInMapping: (m, s) => m.parserBoolValue = s == 'recurring',
+            getFromMapping: m => m.parserBoolValue ? 'recurring' : 'not recurring'
+        });
 
-            this.ignoreEvents = oldIgnoreEvents;
+        let parserTextComponent = new DialogMappingFormComponent<string>( formControls.parserTextControl, {
+            generateSummary: s => s ?? '',
+            setInMapping: (m, s) => m.parserStringValue = s ?? '',
+            getFromMapping: m => m.parserStringValue
+        });
 
-            switch (this.editMappingFormGroup.controls['parserDatapointControl'].value.id){
-                case this.parserDatapoints['vendor'].id:
+        let parserOperationComponent = new DialogMappingFormComponent<ViewEnum>(formControls.parserOperationControl, {
+            generateSummary: s => s?.viewValue ?? '',
+            setInMapping: (m, s) => m.parserOperation = s?.id ?? -1,
+            getFromMapping: m => this.findItemById(ParserOperations, m.parserOperation),
+            childSelector: (p, s) => {
+                let parentSelection: ViewEnum | undefined = p?.getSelection();
+                if (parentSelection){
+                    switch(parentSelection.id){
+                        case ParserDatapoints['vendor'].id:
+                        case ParserDatapoints['category'].id:
+                            return parserAutocompleteComponent;
+                        case ParserDatapoints['value'].id:
+                            if (s){
+                                switch(s.id) {
+                                    case ParserOperations['is'].id:
+                                        return parserCurrencyComponent;
+                                    case ParserOperations['parseColumn'].id:
+                                        return parserColumnComponent;
+                                }
+                            }
+                            break;
+                        case ParserDatapoints['date'].id:
+                            if (s){
+                                switch(s.id) {
+                                    case ParserOperations['is'].id:
+                                        return parserDatepickerComponent;
+                                    case ParserOperations['parseColumn'].id:
+                                        return parserColumnComponent;
+                                }
+                            }
+                            break;
+                        case ParserDatapoints['recurring'].id:
+                            return parserRecurringComponent;
+                        case ParserDatapoints['description'].id:
+                            if (s){
+                                switch(s.id) {
+                                    case ParserOperations['is'].id:
+                                        return parserTextComponent;
+                                    case ParserOperations['parseColumn'].id:
+                                    case ParserOperations['isColumn'].id:
+                                        return parserColumnComponent;
+                                }
+                            }
+                            break;
+                    }
+                }
+
+                return undefined;
+            }
+        });
+
+        formControls.parserOperationControl.valueChanges.pipe(tap(v => {
+            switch(formControls.parserDatapointControl.value?.id) {
+                case ParserDatapoints['vendor'].id:
                     this.parserAutocompletePlaceholder = 'Vendor';
                     this.parserAutocompleteOptions = this.parserVendors;
-                    this.editMappingFormGroup.controls['parserAutocompleteControl'].enable();
+                    this.parserAutocompleteFilteredOptions = this.parserAutocompleteOptions.slice();
                     break;
-                case this.parserDatapoints['category'].id:
+                case ParserDatapoints['category'].id:
                     this.parserAutocompletePlaceholder = 'Category';
                     this.parserAutocompleteOptions = this.parserCategories;
-                    this.editMappingFormGroup.controls['parserAutocompleteControl'].enable();
+                    this.parserAutocompleteFilteredOptions = this.parserAutocompleteOptions.slice();
                     break;
-                case this.parserDatapoints['value'].id:
-                    switch(v.id){
-                        case this.parserOperations['is'].id:
-                            this.editMappingFormGroup.controls['parserCurrencyControl'].enable();
-                            break;
-                        case this.parserOperations['parseColumn'].id:
-                            this.editMappingFormGroup.controls['parserColumnControl'].enable();
-                            this.editMappingFormGroup.controls['parserCheckboxControl'].enable();
-                            this.parserCheckboxString = "Multiply value by -1";
-                            break;
-                    }
-                    break;
-                case this.parserDatapoints['date'].id:
-                    switch(v.id){
-                        case this.parserOperations['is'].id:
-                            this.editMappingFormGroup.controls['parserDatepickerControl'].enable();
-                            break;
-                        case this.parserOperations['parseColumn'].id:
-                            this.editMappingFormGroup.controls['parserColumnControl'].enable();
-                            break;
-                    }
-                    break;
-                case this.parserDatapoints['recurring'].id:
-                    this.editMappingFormGroup.controls['parserRecurringControl'].enable();
-                    break;
-                case this.parserDatapoints['description'].id:
+                case ParserDatapoints['description'].id:
                     switch(v.id){
                         case this.parserOperations['is'].id:
                             this.editMappingFormGroup.controls['parserTextControl'].enable();
@@ -218,98 +378,55 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
             }
         })).subscribe();
 
-        this.editMappingFormGroup.controls['parserAutocompleteControl'].valueChanges.pipe(tap(v => {
-            if (this.ignoreEvents){ return; }
+        this.rootParser = new DialogMappingFormComponent<ViewEnum>(formControls.parserDatapointControl, {
+            generateSummary: s => s?.viewValue ?? '',
+            setInMapping: (m, s) => m.parserDatapoint = s?.id,
+            getFromMapping: m => this.findItemById(ParserDatapoints, m.parserDatapoint),
+            childSelector: _ => parserOperationComponent
+        });
 
-            let vStr = typeof(v) === 'string' ? v : v?.value;
-            if (vStr == null){
-                this.parserAutocompleteFilteredOptions = this.parserAutocompleteOptions.slice();
-            } else {
-                this.parserAutocompleteFilteredOptions = this.parserAutocompleteOptions.filter(o => o.viewValue.toLowerCase().includes(vStr.toLowerCase()))
-            }
-
-            let option = this.tryMatchParserAutocompleteValue(v, this.parserAutocompleteOptions);
-            this.parserNewAutocompleteString = '';
-            if (option){
-                if (option.isNew){
-                    this.parserNewAutocompleteString = option.viewValue;
-                }
-            }
-        })).subscribe();
-
-        this.editMappingFormGroup.controls['parserRegexControl'].valueChanges.pipe(tap(v => {
-            if (this.ignoreEvents){ return; }
-
-            if (this.parserRegexView){
-                if (v){
-                    this.parserRegexView.nativeElement.innerHTML = highlight(v, languages['regex'], 'regex');
-                    this.parserRegexView.nativeElement.parentNode.classList.add('regex-view');
-                } else {
-                    this.parserRegexView.nativeElement.innerHTML = '';
-                    this.parserRegexView.nativeElement.parentNode.classList.remove('regex-view');
-                }
-            }
-        })).subscribe();
-
-        // Detector setup
-
-        this.editMappingFormGroup.controls['detectorRegexControl'].valueChanges.pipe(tap(v => {
-            if (this.ignoreEvents){ return; }
-
-            if (this.detectorRegexView){
-                if (v){
-                    this.detectorRegexView.nativeElement.innerHTML = highlight(v, languages['regex'], 'regex');
-                    this.detectorRegexView.nativeElement.parentNode.classList.add('regex-view');
-                } else {
-                    this.detectorRegexView.nativeElement.innerHTML = '';
-                    this.detectorRegexView.nativeElement.parentNode.classList.remove('regex-view');
-                }
-            }
-        })).subscribe();
-
-        this.editMappingFormGroup.controls['detectorDefaultControl'].valueChanges.pipe(tap(v => {
-            if (this.ignoreEvents){ return; }
-
+        formControls.parserDatapointControl.valueChanges.pipe(tap(v => {
+            this.availableParserOperations = [
+                ParserOperations['is']
+            ];
             if (v){
-                switch (v){
-                    case 'always':
-                        this.resetDetectorRow();
-                        this.disableDetectorRow();
+                switch (v.id){
+                    case ParserDatapoints['value'].id:
+                    case ParserDatapoints['date'].id:
+                        this.availableParserOperations = [
+                            ParserOperations['is'],
+                            ParserOperations['parseColumn']
+                        ];
                         break;
-                    case 'condition':
-                        this.editMappingFormGroup.controls['detectorColumnControl'].enable();
-                        this.editMappingFormGroup.controls['detectorOperationControl'].enable();
-                        break;
-                }
-            }
-        })).subscribe();
-
-        this.editMappingFormGroup.controls['detectorOperationControl'].valueChanges.pipe(tap(v => {
-            if (this.ignoreEvents){ return; }
-
-            this.editMappingFormGroup.controls['detectorRegexControl'].reset();
-            this.editMappingFormGroup.controls['detectorRegexControl'].disable();
-
-            this.editMappingFormGroup.controls['detectorComparisonControl'].reset();
-            this.editMappingFormGroup.controls['detectorComparisonControl'].disable();
-
-            this.editMappingFormGroup.controls['detectorValueControl'].reset();
-            this.editMappingFormGroup.controls['detectorValueControl'].disable();
-
-            if (v){
-                switch(v.id){
-                    case Operations['matchesRegularExpression'].id:
-                        this.editMappingFormGroup.controls['detectorRegexControl'].enable();
-                        break;
-                    case Operations['is'].id:
-                        this.editMappingFormGroup.controls['detectorComparisonControl'].enable();
-                        this.editMappingFormGroup.controls['detectorValueControl'].enable();
+                    case ParserDatapoints['description'].id:
+                        this.availableParserOperations = [
+                            ParserOperations['is'],
+                            ParserOperations['isColumn'],
+                            ParserOperations['parseColumn']
+                        ];
                         break;
                 }
             }
         })).subscribe();
 
+        this.rootDetector.disable();
+        detectorColumnComponent.disable();
+        detectorOperationComponent.disable();
+        detectorRegexComponent.disable();
+        detectorComparisonComponent.disable();
+        detectorValueComponent.disable();
+        detectorCheckboxComponent.disable();
 
+        this.rootParser.disable();
+        parserOperationComponent.disable();
+        parserAutocompleteComponent.disable();
+        parserCurrencyComponent.disable();
+        parserColumnComponent.disable();
+        parserCheckboxComponent.disable();
+        parserDatepickerComponent.disable();
+        parserRecurringComponent.disable();
+        parserTextComponent.disable();
+        parserRegexComponent.disable();
     }
 
     parserAutocompleteDisplayFunction(v: string | {viewValue: string} | undefined){
@@ -343,17 +460,20 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.editMappingFormGroup.controls['parserOperationControl'].disable();
-        this.editMappingFormGroup.controls['parserAutocompleteControl'].disable();
-        this.editMappingFormGroup.controls['detectorDefaultControl'].setValue('always');
+        this.rootDetector.enable();
+        this.rootParser.enable();
     }
 
     /* mapping list */
     addMapping() {
-        this.datapointMappings.push(new TransactionDatapointMappingModel());
+        let newDPM = new TransactionDatapointMappingModel();
+        newDPM.isDefault = true;
+        this.datapointMappings.push(newDPM);
     }
 
-    editMapping() {
+    editMapping(dpm: TransactionDatapointMappingModel) {
+        this.loadMapping(dpm);
+        this.selectedMapping = dpm;
         this.tabOffset = "-100%";
     }
 
@@ -361,20 +481,188 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
         this.tabOffset = "0";
     }
 
-    resetDetectorRow(){
-        this.editMappingFormGroup.controls['detectorColumnControl'].reset();
-        this.editMappingFormGroup.controls['detectorOperationControl'].reset();
-        this.editMappingFormGroup.controls['detectorRegexControl'].reset();
-        this.editMappingFormGroup.controls['detectorComparisonControl'].reset();
-        this.editMappingFormGroup.controls['detectorValueControl'].reset();
+    deleteMapping(){
+        if (this.selectedMapping){
+            let i = this.datapointMappings.indexOf(this.selectedMapping, 0);
+            if (i >= 0){
+                this.datapointMappings.splice(i, 1);
+            }
+        }
+        this.selectedMapping = null;
+        this.returnToList();
     }
 
-    disableDetectorRow(){
-        this.editMappingFormGroup.controls['detectorColumnControl'].disable();
-        this.editMappingFormGroup.controls['detectorOperationControl'].disable();
-        this.editMappingFormGroup.controls['detectorRegexControl'].disable();
-        this.editMappingFormGroup.controls['detectorComparisonControl'].disable();
-        this.editMappingFormGroup.controls['detectorValueControl'].disable();
+    discardMappingChanges(){
+        if (this.selectedMapping){
+            this.loadMapping(this.selectedMapping);
+        }
+        this.selectedMapping = null;
+        this.returnToList();
+    }
+
+    saveMappingChanges(){
+        if (this.selectedMapping){
+            this.applyToMapping(this.selectedMapping);
+        }
+        this.selectedMapping = null;
+        this.returnToList();
+    }
+
+    findItemById(e: {[key: string]: ViewEnum}, id: number | undefined): ViewEnum | undefined {
+        if (id != null){
+            for (let k in e){
+                if (e[k].id === id){
+                    return e[k];
+                }
+            }
+        }
+        return undefined;
+    }
+
+    loadMapping(mapping: TransactionDatapointMappingModel){
+        this.rootDetector.loadMapping(mapping);
+        this.rootParser.loadMapping(mapping);
+    }
+
+    applyToMapping(mapping: TransactionDatapointMappingModel) {
+        this.rootDetector.applyToMapping(mapping);
+        this.rootParser.applyToMapping(mapping);
+    }
+
+    AddNewCategoryIfRequired(category: string | { id: string, viewValue: string, isNew: boolean } | null): {id: string, viewValue: string, isNew: boolean} | null {
+        if (category){
+            if (typeof(category) === 'string'){
+                if (this.parserCategories.filter(e => e.id === category.toUpperCase()).length === 0){
+                    let e = {id: category.toUpperCase(), viewValue: category, isNew: true};
+                    this.parserCategories.push(e);
+                    return e;
+                }
+            } else {
+                return category;
+            }
+        }
+        return null;
+    }
+
+    AddNewVendorIfRequired(vendor: string | { id: string, viewValue: string, isNew: boolean } | null): {id: string, viewValue: string, isNew: boolean} | null {
+        if (vendor){
+            if (typeof(vendor) === 'string') {
+                if (this.parserVendors.filter(e => e.id === vendor.toUpperCase()).length === 0){
+                    let e = {id: vendor.toUpperCase(), viewValue: vendor, isNew: true};
+                    this.parserVendors.push(e);
+                    return e;
+                }
+            } else {
+                return vendor;
+            }
+        }
+        return null;
+    }
+
+    summarizeMapping(mapping: TransactionDatapointMappingModel): string {
+        let err = this.validateMapping(mapping);
+        if (!err) {
+            return this.rootDetector.summarize() + " ➞ " + this.rootParser.summarize();
+        } else {
+            return "This mapping is not configured correctly and will not be saved.";
+        }
+    }
+
+    test(): boolean {
+        console.log('test');
+        return true;
+    }
+
+    validateMapping(mapping: TransactionDatapointMappingModel) : string | undefined {
+        if(!mapping.isDefault){
+            if (mapping.detectorColumn == null){
+                return "Detector column must be populated";
+            }
+
+            let dOp = this.findItemById(DetectorOperations, mapping.detectorOperation);
+            if (dOp){
+                if (dOp.id === DetectorOperations['is'].id){
+                    let dCp = this.findItemById(DetectorComparisons, mapping.detectorComparison);
+                    if (!dCp){
+                        return "Invalid detector comparison";
+                    }
+                }
+            } else {
+                return "Invalid detector operation";
+            }
+        }
+
+        let pDp = this.findItemById(ParserDatapoints, mapping.parserDatapoint);
+        if (pDp){
+            let pOp = this.findItemById(ParserOperations, mapping.parserOperation);
+            if (pOp){
+                switch(pDp.id){
+                    case ParserDatapoints['vendor'].id:
+                        if (pOp.id === ParserOperations['is'].id){
+                            let vendor = this.parserVendors.find(e => e.id === mapping.parserStringValue);
+                            if (!vendor){
+                                return "Invalid vendor";
+                            }
+                        }
+                        break;
+                    case ParserDatapoints['value'].id:
+                        if (pOp.id === ParserOperations['parseColumn'].id){
+                            if (mapping.parserColumn == null){
+                                return "Parser column must be populated";
+                            }
+                        }
+                        break;
+                    case ParserDatapoints['date'].id:
+                        switch(pOp.id){
+                            case ParserOperations['is'].id:
+                                if (!mapping.parserDateTimeValue){
+                                    return "Invalid parser date";
+                                }
+                                break;
+                            case ParserOperations['parseColumn'].id:
+                                if (mapping.parserColumn == null){
+                                    return "Parser column must be populated";
+                                }
+                                break;
+                        }
+                        break;
+                    case ParserDatapoints['category'].id:
+                        if (pOp.id === ParserOperations['is'].id){
+                            let category = this.parserCategories.find(e => e.id === mapping.parserStringValue);
+                            if (!category){
+                                return "Invalid category";
+                            }
+                        }
+                        break;
+                    case ParserDatapoints['description'].id:
+                        switch(pOp.id){
+                            case ParserOperations['is'].id:
+                                if (mapping.parserStringValue == null){
+                                    return "Parser string value must be populated";
+                                }
+                                break;
+                            case ParserOperations['isColumn'].id:
+                                if (mapping.parserColumn == null){
+                                    return "Parser column must be populated";
+                                }
+                                break;
+                            case ParserOperations['parseColumn'].id:
+                                if (mapping.parserColumn == null
+                                    || mapping.parserStringValue == null){
+                                    return "Parser string value and column must be populated";
+                                }
+                                break;
+                        }
+                        break;
+                }
+            } else {
+                return "Invalid parser operation";
+            }
+        } else {
+            return "Invalid parser datapoint";
+        }
+
+        return undefined;
     }
 
 }

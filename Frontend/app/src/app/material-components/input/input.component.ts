@@ -107,7 +107,7 @@ export class IntegerInputControl implements IMaterialInputControl {
             let fieldValue = Number(value).toFixed(0);
             this.group.setValue({formControl: fieldValue});
         } else {
-            this.group.setValue({formControl: value});
+            this.group.setValue({formControl: null});
         }
     }
 
