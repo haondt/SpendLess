@@ -25,10 +25,12 @@ import { DialogMappingFormComponent, IDialogMappingFormComponent } from "./datap
 })
 export class DatapointMappingsConfigurationDialogComponent implements OnInit {
     datapointMappings: TransactionDatapointMappingModel[];
+    filteredDatapointMappings: TransactionDatapointMappingModel[];
     selectedMapping: TransactionDatapointMappingModel | null;
     editMappingFormGroup: FormGroup;
     rootDetector: IDialogMappingFormComponent;
     rootParser: IDialogMappingFormComponent;
+    searchControl: FormControl;
 
     // offset value for sliding tabs
     tabOffset = "0";
@@ -59,6 +61,7 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
         private dialogRef: MatDialogRef<DatapointMappingsConfigurationDialogComponent>, userService: UserService) {
 
         this.datapointMappings = data.datapointMappings;
+
         userService.getUserInfo().subscribe({
             next: ui => this.devMode = ui.siteData.isDeveloper
         })
@@ -83,6 +86,8 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
         });
 
         let formControls = {
+            searchControl: new FormControl(),
+
             // detector controls
             detectorDefaultControl: new FormControl('always', {initialValueIsDefault: true}),
             detectorColumnControl: new FormControl(),
@@ -106,6 +111,11 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
         };
 
         this.editMappingFormGroup = new FormGroup(formControls);
+        this.searchControl = formControls.searchControl;
+
+        this.searchControl.valueChanges.subscribe({
+            next: _ => this.updateFilteredDatapointMappings()
+        });
 
         // Detector setup
 
@@ -487,6 +497,7 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
         for (let mapping of this.datapointMappings){
             this.loadMapping(mapping); // load once to generate summaries
         }
+        this.updateFilteredDatapointMappings();
     }
 
     /* mapping list */
@@ -495,6 +506,7 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
         newDPM.isDefault = true;
         newDPM._summary = "New mapping";
         this.datapointMappings.push(newDPM);
+        this.updateFilteredDatapointMappings()
     }
 
     editMapping(dpm: TransactionDatapointMappingModel) {
@@ -524,6 +536,7 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
             let i = this.datapointMappings.indexOf(this.selectedMapping, 0);
             if (i >= 0){
                 this.datapointMappings.splice(i, 1);
+                this.updateFilteredDatapointMappings();
             }
         }
         this.selectedMapping = null;
@@ -710,6 +723,15 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
 
     cancel() {
         this.dialogRef.close();
+    }
+
+    updateFilteredDatapointMappings() : void {
+        let term = this.searchControl.value;
+        if (term){
+            this.filteredDatapointMappings = this.datapointMappings.filter(o => o._summary.toLowerCase().includes(term.toLowerCase()))
+        } else {
+            this.filteredDatapointMappings = this.datapointMappings.slice();
+        }
     }
 
 }

@@ -4,11 +4,11 @@
         <div class="tabs" [style.left]="tabOffset">
             <div class="tab">
 
-                <div class="dp-list-header">
+                <div class="dp-list-header" [formGroup]="editMappingFormGroup">
                     <mat-icon>search</mat-icon>
                     <mat-form-field appearance="legacy" floatLabel="never">
-                        <input matInput type="text" placeholder="Search">
-                        <button matSuffix mat-icon-button>
+                        <input matInput type="text" placeholder="Search" formControlName="searchControl">
+                        <button matSuffix *ngIf="searchControl.value" (click)="searchControl.reset()" mat-icon-button>
                             <mat-icon>close</mat-icon>
                         </button>
                     </mat-form-field>
@@ -23,7 +23,7 @@
 
                     <div class="dp-list">
                         <div class="dp-list-item" (click)="editMapping(datapointMapping)"
-                            *ngFor="let datapointMapping of datapointMappings; let last=last; let first=first;"
+                            *ngFor="let datapointMapping of filteredDatapointMappings; let last=last; let first=first;"
                             [ngClass]="{'last': last, 'first':first}">
                             <span class="focus-overlay"></span>
                             <div class="dp-list-item-outer-wrapper">
