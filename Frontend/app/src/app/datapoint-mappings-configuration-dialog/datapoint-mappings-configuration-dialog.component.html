@@ -43,7 +43,7 @@
                             <span class="spacer"></span>
                             <button mat-stroked-button color="secret" (click)="viewJson()">View Json</button>
                             <button mat-stroked-button color="warn" (click)="deleteMapping()">Delete Mapping</button>
-                            <button mat-stroked-button color="accent" (click)="discardMappingChanges()">Discard Changes</button>
+                            <button mat-stroked-button (click)="discardMappingChanges()">Discard Changes</button>
                             <button mat-stroked-button color="affirmative" (click)="saveMappingChanges()">Save Mapping</button>
                             </div>
                 <div class="mapping-editor">
@@ -59,7 +59,7 @@
                         <mat-divider></mat-divider>
 
                         <div class="form-row">
-                            <label>If column</label>
+                            <label class="detector-text">If column</label>
                             <mat-form-field appearance="standard" >
                                 <material-input formControlName="detectorColumnControl" type="integer" placeholder="Column number"></material-input>
                                 <mat-hint>Columns are zero indexed</mat-hint>
@@ -187,7 +187,7 @@
                 </div>
                 <div class="dp-list-scroller">
                     <div class="dp-code-view">
-                        <pre prism language="json" #developerJsonView>ahhh bees</pre>
+                        <pre prism language="json" #jsonView></pre>
                     </div>
                 </div>
             </div>

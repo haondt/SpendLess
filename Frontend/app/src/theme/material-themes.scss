@@ -1,8 +1,8 @@
 @use "sass:map";
 @use "@angular/material" as mat;
-@use "./additional-styles.scss" as additional-styles;
+@use "./additional-styles/additional-styles.scss" as additional-styles;
 @use "./material-palettes.scss" as palettes;
-@use "./additional-themes.scss" as additional-themes;
+@use "./additional-styles/additional-themes.scss" as additional-themes;
 @use "./component-styles.scss" as components;
 
 

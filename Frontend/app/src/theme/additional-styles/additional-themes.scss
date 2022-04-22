@@ -1,0 +1,37 @@
+@use "../material-palettes.scss" as palettes;
+@use "sass:map";
+
+/* default theme */
+$themes: (
+    default: (
+        affirmative: palettes.$secondary-default,
+        secret: palettes.$pink,
+        prism: (
+            string: blue,
+            symbol: blue,
+            property: white,
+            operator: black,
+            punctuation: black,
+            keyword: red,
+        )
+    ),
+    dark-gold: (
+        affirmative: palettes.$mild-green,
+        secret: palettes.$electric-blue,
+        prism: (
+            string: #927bda,
+            symbol: #a88b3a,
+            property: white,
+            operator: #ae9fbd,
+            punctuation: #cfc7a2,
+            keyword: #9e62ff
+        )
+    )
+);
+
+@function get-theme($theme){
+    @if map.get($themes, $theme) {
+        @return map.get($themes, $theme);
+    }
+    @return map.get($themes, default);
+}

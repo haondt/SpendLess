@@ -56,6 +56,11 @@ span.focus-overlay:active {
     margin-left: -100%;
 }
 
+.dp-code-view {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
 .mat-tab-group {
     height: 100%
 }
@@ -125,6 +130,7 @@ div.mat-tab-body-wrapper {
     padding:10px;
 }
 
+.detector-text,
 .parser-text {
     white-space: nowrap;
 }

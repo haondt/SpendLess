@@ -1,7 +1,10 @@
 @use "sass:map";
-
 @use "@angular/material" as mat;
+@use "./prism-styles.scss" as prism-styles;
+
 @mixin theme($theme) {
+    @include prism-styles.theme($theme);
+
     $aff: map.get($theme, affirmative); // affirmative palette
     $s: map.get($theme, secret); // secret palette
     //$pc: map.get($theme, pop-colors); // extra accent colors

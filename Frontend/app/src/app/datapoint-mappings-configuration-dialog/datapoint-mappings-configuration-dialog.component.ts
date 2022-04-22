@@ -51,6 +51,7 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
 
     @ViewChild('detectorRegexView') detectorRegexView: ElementRef;
     @ViewChild('parserRegexView') parserRegexView: ElementRef;
+    @ViewChild('jsonView') jsonView: ElementRef;
 
     devMode: boolean = false;
 
@@ -505,6 +506,8 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
     viewJson(){
         let dpm = new TransactionDatapointMappingModel();
         this.applyToMapping(dpm);
+        console.log(languages);
+        this.jsonView.nativeElement.innerHTML = highlight(JSON.stringify(dpm, null, 2), languages['js'], 'js');
         this.tabOffset = "-200%";
     }
 
