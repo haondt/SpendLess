@@ -6,6 +6,7 @@
 @use "../app/nav/_nav.component.scss" as nav;
 @use "../app/accounts/_accounts.component.scss" as accounts;
 @use "../app/datapoint-mappings-configuration-dialog/_datapoint-mappings-configuration-dialog.component.scss" as dp-mapping-dialog;
+@use "../app/row-selector-dialog/_row-selector-dialog.component.scss" as row-selector-dialog;
 
 @mixin theme($theme){
     /* angular material styles */
@@ -18,4 +19,5 @@
     @include nav.theme($theme);
     @include accounts.theme($theme);
     @include dp-mapping-dialog.theme($theme);
+    @include row-selector-dialog.theme($theme);
 }

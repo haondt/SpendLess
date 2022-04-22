@@ -236,4 +236,10 @@
   html {
     background-color: black;
   }
+
+  /* snackbar */
+  .mat-snack-bar-container {
+    background-color: $primary;
+    color: $primary-contrast;
+  }
 }

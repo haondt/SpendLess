@@ -1,0 +1,36 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    width: 80vw;
+    max-width: 600px;
+    max-height: min(600px, 80vh);
+}
+
+.row-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.row-selectable {
+    display: flex;
+    width: 100%;
+}
+
+.row-text {
+    margin-left: calc(-100% + 10px);
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+span.focus-overlay {
+    width: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+span.focus-overlay:hover {
+    opacity: 0.04;
+}
+span.focus-overlay:active {
+    opacity: 0.13;
+}

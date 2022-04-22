@@ -31,6 +31,7 @@ import { ImportSettingsConfigurationDialogComponent } from './import-settings-co
 import { MaterialInputComponent } from './material-components/input/input.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DatapointMappingsConfigurationDialogComponent } from './datapoint-mappings-configuration-dialog/datapoint-mappings-configuration-dialog.component';
+import { RowSelectorDialogComponent } from './row-selector-dialog/row-selector-dialog.component';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatRadioModule } from '@angular/material/radio';
@@ -38,6 +39,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import 'prismjs/components/prism-css';
 import 'prismjs/components/prism-javascript';
@@ -57,6 +59,7 @@ import 'prismjs/components/prism-regex';
     ImportSettingsConfigurationDialogComponent,
     MaterialInputComponent,
     DatapointMappingsConfigurationDialogComponent,
+    RowSelectorDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -86,7 +89,8 @@ import 'prismjs/components/prism-regex';
     MatSelectModule,
     MatAutocompleteModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    MatSnackBarModule
   ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]

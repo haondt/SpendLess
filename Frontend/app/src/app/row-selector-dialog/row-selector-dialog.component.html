@@ -1,0 +1,17 @@
+<div mat-dialog-content>
+    <h2 mat-dialog-title>{{ title }}</h2>
+    <div>
+        <div>
+            <div class="row-item" *ngFor="let obj of objects; let last = last;">
+                <div class="row-selectable">
+                    <span class="focus-overlay" (click)="select(obj.data)"></span>
+                    <span class="row-text">{{ obj.viewValue }}</span>
+                </div>
+                <mat-divider *ngIf="!last"></mat-divider>
+            </div>
+        </div>
+    </div>
+</div>
+<div mat-dialog-actions align="end">
+    <button mat-button (click)="cancel()">Cancel</button>
+</div>

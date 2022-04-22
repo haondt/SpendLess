@@ -1,0 +1,12 @@
+@use 'sass:map';
+@use "@angular/material" as mat;
+
+@mixin theme($theme){
+  $p: map.get($theme, primary);
+  $primary: mat.get-color-from-palette($p);
+  $primary-contrast: mat.get-color-from-palette($p, default-contrast);
+
+    span.focus-overlay {
+        background-color: $primary-contrast;
+    }
+}
