@@ -2,16 +2,19 @@ import { DIR_DOCUMENT_FACTORY } from "@angular/cdk/bidi/dir-document-token";
 import { Parser } from "@angular/compiler";
 import { Component, ElementRef, Inject, OnInit, ViewChild, ViewEncapsulation } from "@angular/core";
 import { TestModuleMetadata } from "@angular/core/testing";
-import { FormControl, FormGroup } from "@angular/forms";
+import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { highlight, languages } from "prismjs";
 import { tap } from "rxjs";
+import { CategoryModel } from "../models/data/Category";
+import { SiteData } from "../models/data/SiteData";
 import { TransactionDatapointMappingModel } from "../models/data/TransactionDatapointMapping";
 import { DetectorComparisons } from "../models/enums/DetectorComparisons";
 import { DetectorOperations } from "../models/enums/DetectorOperations";
 import { ParserDatapoints } from "../models/enums/ParserDatapoints";
 import { ParserOperations } from "../models/enums/ParserOperations";
 import { ViewEnum } from "../models/enums/ViewEnum";
+import { UserService } from "../services/api/User.service";
 import { DialogMappingFormComponent, IDialogMappingFormComponent } from "./datapoint-mapping-form-component";
 
 
@@ -37,29 +40,46 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
     parserOperations = ParserOperations;
     availableParserOperations = [ ParserOperations['is'] ];
 
-    parserVendors: { id: string, viewValue: string, isNew: boolean }[] = [
-        { id: "B7847220-682A-45DB-B44D-D1232F2C7E29", viewValue: "Amazon", isNew: false },
-        { id: "1D2408AF-BB77-45CE-82AC-7166C42E66A5", viewValue: "Netflix", isNew: false },
-        { id: "4E8E7444-500D-4C64-B576-5A3C73F67F2A", viewValue: "Costco", isNew: false }
-    ];
+    parserVendors: { value: string, isNew: boolean }[] = [];
 
-    parserCategories: { id: string, viewValue: string, isNew: boolean }[] = [
-        { id: "AASDASD", viewValue: "Category A", isNew: false },
-        { id: "BBSDBSD", viewValue: "Category B", isNew: false },
-    ];
+    parserCategories: { value: string, isNew: boolean }[] = [];
 
-    parserAutocompleteOptions: {id: string, viewValue: string, isNew: boolean }[] = [];
-    parserAutocompleteFilteredOptions: {id: string, viewValue: string, isNew: boolean }[] = [];
+    parserAutocompleteOptions: {value: string, isNew: boolean }[] = [];
+    parserAutocompleteFilteredOptions: {value: string, isNew: boolean }[] = [];
     parserAutocompletePlaceholder: string;
     parserNewAutocompleteString: string = "";
 
     @ViewChild('detectorRegexView') detectorRegexView: ElementRef;
     @ViewChild('parserRegexView') parserRegexView: ElementRef;
 
-    constructor(@Inject(MAT_DIALOG_DATA) private data: { datapointMappings: TransactionDatapointMappingModel[], newCategories: [], newVendors: [] },
-        private dialogRef: MatDialogRef<DatapointMappingsConfigurationDialogComponent>) {
+    devMode: boolean = false;
 
-            this.datapointMappings = data.datapointMappings;
+    constructor(@Inject(MAT_DIALOG_DATA) data: { datapointMappings: TransactionDatapointMappingModel[] },
+        private dialogRef: MatDialogRef<DatapointMappingsConfigurationDialogComponent>, userService: UserService) {
+
+        this.datapointMappings = data.datapointMappings;
+        userService.getUserInfo().subscribe({
+            next: ui => this.devMode = ui.siteData.isDeveloper
+        })
+
+
+        userService.getCategories().subscribe({
+            next: c => this.parserCategories = c.map(_c => CategoryModel.unroll(_c)).flat().flat().map(_c => {
+                return {
+                    value: _c.name,
+                    isNew: false
+                };
+            })
+        });
+
+        userService.getVendors().subscribe({
+            next: v => this.parserVendors = v.map(_v => {
+                return {
+                    value: _v.name,
+                    isNew: false
+                }
+            })
+        });
 
         let formControls = {
             // detector controls
@@ -89,8 +109,8 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
         // Detector setup
 
         let detectorRegexComponent = new DialogMappingFormComponent<string>(formControls.detectorRegexControl, {
-            setInMapping: (m, s) => m.detectorRegularExpression = s ?? "",
-            getFromMapping: m => m.detectorRegularExpression,
+            setInMapping: (m, s) => m.detectorStringValue = s ?? "",
+            getFromMapping: m => m.detectorStringValue,
         })
 
         formControls.detectorRegexControl.valueChanges.pipe(tap(v => {
@@ -138,7 +158,8 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
                     }
                 }
                 return undefined;
-            }
+            },
+            resetValueWhenParentValueChanges: false
         });
 
         let detectorColumnComponent = new DialogMappingFormComponent<number>(formControls.detectorColumnControl, {
@@ -162,13 +183,13 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
 
         // parser setup
 
-        let parserAutocompleteComponent = new DialogMappingFormComponent<{id: string, viewValue: string, isNew: boolean} | string>(formControls.parserAutocompleteControl, {
+        let parserAutocompleteComponent = new DialogMappingFormComponent<{value: string, isNew: boolean} | string>(formControls.parserAutocompleteControl, {
             generateSummary: s => {
                 if (s){
                     if (typeof(s) == 'string'){
                         return s;
                     } else {
-                        return s.viewValue;
+                        return s.value;
                     }
                 }
                 return "";
@@ -181,13 +202,13 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
                             case ParserDatapoints['vendor'].id:
                                 let vendor = this.AddNewVendorIfRequired(s);
                                 if (vendor){
-                                    m.parserStringValue = vendor.id;
+                                    m.parserStringValue = vendor.value;
                                 }
                             break;
                             case ParserDatapoints['category'].id:
                                 let category = this.AddNewCategoryIfRequired(s);
                                 if (category){
-                                    m.parserStringValue = category.id;
+                                    m.parserStringValue = category.value;
                                 }
                             break;
                         }
@@ -199,9 +220,9 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
                 if (datapoint){
                     switch(datapoint.id){
                         case ParserDatapoints['vendor'].id:
-                            return this.parserVendors.find(e => e.id == m.parserStringValue);
+                            return this.parserVendors.find(e => e.value == m.parserStringValue) ?? m.parserStringValue;
                         case ParserDatapoints['category'].id:
-                            return this.parserCategories.find(e => e.id == m.parserStringValue);
+                            return this.parserCategories.find(e => e.value == m.parserStringValue) ?? m.parserStringValue;
                     }
                 }
                 return undefined;
@@ -213,14 +234,14 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
             if (vStr == null){
                 this.parserAutocompleteFilteredOptions = this.parserAutocompleteOptions.slice();
             } else {
-                this.parserAutocompleteFilteredOptions = this.parserAutocompleteOptions.filter(o => o.viewValue.toLowerCase().includes(vStr.toLowerCase()))
+                this.parserAutocompleteFilteredOptions = this.parserAutocompleteOptions.filter(o => o.value.toLowerCase().includes(vStr.toLowerCase()))
             }
 
             let option = this.tryMatchParserAutocompleteValue(v, this.parserAutocompleteOptions);
             this.parserNewAutocompleteString = '';
             if (option){
                 if (option.isNew){
-                    this.parserNewAutocompleteString = option.viewValue;
+                    this.parserNewAutocompleteString = option.value;
                 }
             }
         })).subscribe();
@@ -434,25 +455,25 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
     }
 
 
-    tryMatchParserAutocompleteValue(value: string | {id: string, viewValue: string, isNew: boolean} | undefined,
-        values: {id: string, viewValue: string, isNew: boolean}[])
-        : { id: string, viewValue: string, isNew: boolean } | undefined {
+    tryMatchParserAutocompleteValue(value: string | {value: string, isNew: boolean} | undefined,
+        values: {value: string, isNew: boolean}[])
+        : { value: string, isNew: boolean } | undefined {
         if (!value){
             return undefined;
         }
         else if (typeof(value) === 'string'){
             // try to match case sensitive
-            let caseSensitiveMatch = values.find(o => o.viewValue === value);
+            let caseSensitiveMatch = values.find(o => o.value === value);
             if (caseSensitiveMatch){
                 return caseSensitiveMatch;
             }
             // try to match case insensitive
-            let caseInsensitiveMatch = values.find(o => o.viewValue.toLowerCase() === value.toLowerCase());
+            let caseInsensitiveMatch = values.find(o => o.value.toLowerCase() === value.toLowerCase());
             if (caseInsensitiveMatch){
                 return caseInsensitiveMatch;
             }
             // create new
-            return {id: value.toLowerCase(), viewValue: value, isNew: true};
+            return {value: value, isNew: true};
 
         } else {
             return value;
@@ -462,18 +483,32 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
     ngOnInit(): void {
         this.rootDetector.enable();
         this.rootParser.enable();
+        for (let mapping of this.datapointMappings){
+            this.loadMapping(mapping); // load once to generate summaries
+        }
     }
 
     /* mapping list */
     addMapping() {
         let newDPM = new TransactionDatapointMappingModel();
         newDPM.isDefault = true;
+        newDPM._summary = "New mapping";
         this.datapointMappings.push(newDPM);
     }
 
     editMapping(dpm: TransactionDatapointMappingModel) {
         this.loadMapping(dpm);
         this.selectedMapping = dpm;
+        this.tabOffset = "-100%";
+    }
+
+    viewJson(){
+        let dpm = new TransactionDatapointMappingModel();
+        this.applyToMapping(dpm);
+        this.tabOffset = "-200%";
+    }
+
+    returnToEditMapping(){
         this.tabOffset = "-100%";
     }
 
@@ -522,18 +557,20 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
     loadMapping(mapping: TransactionDatapointMappingModel){
         this.rootDetector.loadMapping(mapping);
         this.rootParser.loadMapping(mapping);
+        this.summarizeMapping(mapping);
     }
 
     applyToMapping(mapping: TransactionDatapointMappingModel) {
         this.rootDetector.applyToMapping(mapping);
         this.rootParser.applyToMapping(mapping);
+        this.summarizeMapping(mapping);
     }
 
-    AddNewCategoryIfRequired(category: string | { id: string, viewValue: string, isNew: boolean } | null): {id: string, viewValue: string, isNew: boolean} | null {
+    AddNewCategoryIfRequired(category: string | { value: string, isNew: boolean } | null): { value: string, isNew: boolean} | null {
         if (category){
             if (typeof(category) === 'string'){
-                if (this.parserCategories.filter(e => e.id === category.toUpperCase()).length === 0){
-                    let e = {id: category.toUpperCase(), viewValue: category, isNew: true};
+                if (this.parserCategories.filter(e => e.value === category).length === 0){
+                    let e = {value: category, isNew: true};
                     this.parserCategories.push(e);
                     return e;
                 }
@@ -544,11 +581,11 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
         return null;
     }
 
-    AddNewVendorIfRequired(vendor: string | { id: string, viewValue: string, isNew: boolean } | null): {id: string, viewValue: string, isNew: boolean} | null {
+    AddNewVendorIfRequired(vendor: string | { value: string, isNew: boolean } | null): {value: string, isNew: boolean} | null {
         if (vendor){
             if (typeof(vendor) === 'string') {
-                if (this.parserVendors.filter(e => e.id === vendor.toUpperCase()).length === 0){
-                    let e = {id: vendor.toUpperCase(), viewValue: vendor, isNew: true};
+                if (this.parserVendors.filter(e => e.value === vendor).length === 0){
+                    let e = {value: vendor, isNew: true};
                     this.parserVendors.push(e);
                     return e;
                 }
@@ -559,18 +596,13 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
         return null;
     }
 
-    summarizeMapping(mapping: TransactionDatapointMappingModel): string {
+    summarizeMapping(mapping: TransactionDatapointMappingModel): void {
         let err = this.validateMapping(mapping);
         if (!err) {
-            return this.rootDetector.summarize() + " ➞ " + this.rootParser.summarize();
+            mapping._summary = this.rootDetector.summarize() + " ➞ " + this.rootParser.summarize();
         } else {
-            return "This mapping is not configured correctly and will not be saved.";
+            mapping._summary = "This mapping is not configured correctly and will not be saved.";
         }
-    }
-
-    test(): boolean {
-        console.log('test');
-        return true;
     }
 
     validateMapping(mapping: TransactionDatapointMappingModel) : string | undefined {
@@ -599,8 +631,7 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
                 switch(pDp.id){
                     case ParserDatapoints['vendor'].id:
                         if (pOp.id === ParserOperations['is'].id){
-                            let vendor = this.parserVendors.find(e => e.id === mapping.parserStringValue);
-                            if (!vendor){
+                            if (!mapping.parserStringValue){
                                 return "Invalid vendor";
                             }
                         }
@@ -628,8 +659,7 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
                         break;
                     case ParserDatapoints['category'].id:
                         if (pOp.id === ParserOperations['is'].id){
-                            let category = this.parserCategories.find(e => e.id === mapping.parserStringValue);
-                            if (!category){
+                            if (!mapping.parserStringValue){
                                 return "Invalid category";
                             }
                         }
@@ -663,6 +693,20 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
         }
 
         return undefined;
+    }
+
+    save() {
+        let validMappings = [];
+        for(let mapping of this.datapointMappings){
+            if (!this.validateMapping(mapping)){
+                validMappings.push(mapping);
+            }
+        }
+        this.dialogRef.close(validMappings);
+    }
+
+    cancel() {
+        this.dialogRef.close();
     }
 
 }

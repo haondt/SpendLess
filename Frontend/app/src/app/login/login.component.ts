@@ -6,6 +6,8 @@ import { FormControl, FormBuilder, FormGroup, Validators } from '@angular/forms'
 import { UserRegistrationModel } from '../models/authentication/UserRegistrationModel';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { SiteData } from '../models/data/SiteData';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -81,6 +83,7 @@ export class LoginComponent implements OnInit {
     regModel.name = this.registerNameControl.value;
     regModel.username = this.registerUsernameControl.value;
     regModel.password = this.registerPasswordControl.value;
+    regModel.siteData.isDeveloper = !environment.production;
     this.registerFormGroup.markAllAsTouched();
     this.registerErrorControl.reset();
     if (this.registerFormGroup.valid){

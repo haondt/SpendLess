@@ -41,7 +41,7 @@ namespace SpendLess.Authentication.Services
         public bool TryGetSessionToken(out string token)
         {
             _httpContextAccessor.HttpContext.Request.Headers.TryGetValue(HeaderNames.Authorization, out var accessTokenValues);
-            token = accessTokenValues.FirstOrDefault()?.Split(" ")?.LastOrDefault();
+            token = accessTokenValues.FirstOrDefault()?.Split(" ")?.LastOrDefault() ?? string.Empty;
             return !string.IsNullOrEmpty(token);
         }
     }

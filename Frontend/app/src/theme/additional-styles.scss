@@ -3,9 +3,11 @@
 @use "@angular/material" as mat;
 @mixin theme($theme) {
     $aff: map.get($theme, affirmative); // affirmative palette
+    $s: map.get($theme, secret); // secret palette
     //$pc: map.get($theme, pop-colors); // extra accent colors
     $affirmative: mat.get-color-from-palette($aff); //  default affirmative color
     $affirmative-contrast: mat.get-color-from-palette($aff, default-contrast);
+    $secret: mat.get-color-from-palette($s);
 
     .background.affirmative {
         background-color: $affirmative;
@@ -22,6 +24,16 @@
     button[mat-button][color="affirmative"] span.mat-button-focus-overlay,
     button[mat-stroked-button][color="affirmative"] span.mat-button-focus-overlay {
         background-color: $affirmative;
+    }
 
+    button[mat-button][color="secret"],
+    button[mat-stroked-button][color="secret"] {
+        background-color: transparent;
+        color: $secret;
+    }
+
+    button[mat-button][color="secret"] span.mat-button-focus-overlay,
+    button[mat-stroked-button][color="secret"] span.mat-button-focus-overlay {
+        background-color: $secret;
     }
 }

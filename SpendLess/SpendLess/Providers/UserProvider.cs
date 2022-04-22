@@ -1,6 +1,6 @@
 ﻿using SpendLess.Abstractions.Providers;
 using SpendLess.Authentication.Abstractions;
-using SpendLess.Domain.Models;
+using SpendLess.Core.Models;
 using SpendLess.Storage;
 using System;
 using System.Collections.Generic;
@@ -13,18 +13,25 @@ namespace SpendLess.Providers
     public class UserProvider : IUserProvider
     {
         private readonly IPrincipalService _principalService;
-        private readonly ThrowsExceptionStorage<string, User> _userStorage;
+        private readonly IStorage<string, User> _userStorage;
 
         public UserProvider(IStorage<string, User> userStorage, IPrincipalService principalService)
         {
             _principalService = principalService;
-            _userStorage = new ThrowsExceptionStorage<string, User>(userStorage);
+            _userStorage = userStorage;
         }
-        public Task<User> GetAsync() => _userStorage.GetAsync(_principalService.GetUsername());
-
-        public async Task<User> WriteAsync(User item)
+        public async Task<User> GetAsync()
         {
-            await _userStorage.UpdateAsync(_principalService.GetUsername(), item);
+            var user = await _userStorage.GetAsync(_principalService.GetUsername());
+            if (user.success)
+                return user.entity;
+            throw new KeyNotFoundException();
+        }
+
+        public async Task<User> UpsertAsync(User item)
+        {
+            if (!(await _userStorage.UpdateAsync(_principalService.GetUsername(), item)))
+                throw new KeyNotFoundException();
             return item;
         }
     }

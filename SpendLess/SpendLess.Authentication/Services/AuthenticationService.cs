@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using SpendLess.Authentication.Abstractions;
-using SpendLess.Domain.Dtos;
-using SpendLess.Domain.Models;
+using SpendLess.Core.Dtos;
+using SpendLess.Core.Models;
 using SpendLess.Authentication.Settings;
 using SpendLess.Storage;
 using System;
@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SpendLess.Domain.Abstractions;
+using SpendLess.Core.Abstractions;
 
 namespace SpendLess.Authentication.Services
 {
@@ -134,7 +134,8 @@ namespace SpendLess.Authentication.Services
                 {
                     PasswordHash = hashedPass,
                     PasswordSalt = salt,
-                    Name = registrationDto.Name
+                    Name = registrationDto.Name,
+                    SiteData = registrationDto.SiteData
                 }))
                 {
                     var refreshTokenValue = _cryptoService.GenerateRefreshToken();

@@ -5,15 +5,17 @@ VisualStudioVersion = 17.0.32002.185
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpendLess", "SpendLess\SpendLess.csproj", "{2A68DB4F-DDB7-4F4C-838D-0EA559954AF6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpendLess.Domain", "SpendLess.Domain\SpendLess.Domain.csproj", "{722C1FE2-A147-4CB1-A642-BAFA6CD8AA36}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpendLess.Core", "SpendLess.Core\SpendLess.Core.csproj", "{722C1FE2-A147-4CB1-A642-BAFA6CD8AA36}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpendLess.Storage", "SpendLess.Storage\SpendLess.Storage.csproj", "{DFFF1744-4BAB-4E18-A6E4-F5E9EAA6B6D8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpendLess.API", "SpendLess.API\SpendLess.API.csproj", "{881F73BD-32E0-49A2-909C-817DFF2B86BC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpendLess.Configuration", "SpendLess.Configuration\SpendLess.Configuration.csproj", "{E5659FC0-3084-4695-B838-B5FC3E325D6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpendLess.Authentication", "SpendLess.Authentication\SpendLess.Authentication.csproj", "{985C8294-B93B-4D12-94CA-86C774AB5683}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpendLess.Authentication", "SpendLess.Authentication\SpendLess.Authentication.csproj", "{985C8294-B93B-4D12-94CA-86C774AB5683}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpendLess.Domain", "SpendLess.Domain\SpendLess.Domain.csproj", "{2A7F9A07-34EF-43BD-A153-9D0C91E504AF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpendLess.Tests", "SpendLess.Tests\SpendLess.Tests.csproj", "{D2A667E0-79C9-413B-B5C1-8929EB0FE9B9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,14 +39,18 @@ Global
 		{881F73BD-32E0-49A2-909C-817DFF2B86BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{881F73BD-32E0-49A2-909C-817DFF2B86BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{881F73BD-32E0-49A2-909C-817DFF2B86BC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E5659FC0-3084-4695-B838-B5FC3E325D6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E5659FC0-3084-4695-B838-B5FC3E325D6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E5659FC0-3084-4695-B838-B5FC3E325D6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E5659FC0-3084-4695-B838-B5FC3E325D6D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{985C8294-B93B-4D12-94CA-86C774AB5683}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{985C8294-B93B-4D12-94CA-86C774AB5683}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{985C8294-B93B-4D12-94CA-86C774AB5683}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{985C8294-B93B-4D12-94CA-86C774AB5683}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A7F9A07-34EF-43BD-A153-9D0C91E504AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A7F9A07-34EF-43BD-A153-9D0C91E504AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A7F9A07-34EF-43BD-A153-9D0C91E504AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A7F9A07-34EF-43BD-A153-9D0C91E504AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2A667E0-79C9-413B-B5C1-8929EB0FE9B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2A667E0-79C9-413B-B5C1-8929EB0FE9B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2A667E0-79C9-413B-B5C1-8929EB0FE9B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2A667E0-79C9-413B-B5C1-8929EB0FE9B9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -127,6 +127,31 @@ $mild-red: mat.define-palette((
     )
 ));
 
+$electric-blue: mat.define-palette((
+    50 : #e4fcfc,
+    100 : #bcf7f7,
+    200 : #90f2f2,
+    300 : #63eded,
+    400 : #41e9e9,
+    500 : #20e5e5,
+    600 : #1ce2e2,
+    700 : #18dede,
+    800 : #13dada,
+    900 : #0bd3d3,
+    contrast: (
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #000000,
+        400 : #000000,
+        500 : #000000,
+        600 : #000000,
+        700 : #000000,
+        800 : #000000,
+        900 : #000000,
+    )
+));
+
 $green: mat.define-palette(mat.$green-palette);
 $indigo: mat.define-palette(mat.$indigo-palette);
 $pink: mat.define-palette(mat.$pink-palette);

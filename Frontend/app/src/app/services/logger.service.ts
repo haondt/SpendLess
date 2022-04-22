@@ -6,6 +6,10 @@ import { Injectable } from "@angular/core";
 export class Logger {
     constructor(){ }
 
+    public error(logItem: any){
+        console.log(logItem);
+    }
+
     public info(logItem: any){
         console.log(logItem);
     }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SpendLess.Abstractions.Providers;
-using SpendLess.Domain.Models;
+using SpendLess.Core.Models;
 using SpendLess.Providers;
 using SpendLess.Storage.Extensions;
 using System;
@@ -16,9 +16,9 @@ namespace SpendLess.Extensions
     {
         public static IServiceCollection AddSpendLessServices(this IServiceCollection services)
         {
-            services.AddTransient<IUserInfoProvider, UserInfoProvider>();
             services.AddTransient<IUserProvider, UserProvider>();
             services.AddTransient<IAccountsProvider, AccountsProvider>();
+            services.AddTransient<ITransactionDatapointMappingProvider, TransactionDatapointMappingProvider>();
             return services;
         }
     }

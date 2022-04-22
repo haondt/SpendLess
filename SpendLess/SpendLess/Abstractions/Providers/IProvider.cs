@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace SpendLess.Abstractions.Providers
 {
-    public interface IProvider<TRequest, TUpsert>
+    public interface IProvider<TResult, TUpsert, TUpsertResult>
     {
-        Task<TRequest> GetAsync();
-        Task<TRequest> WriteAsync(TUpsert item);
+        Task<TResult> GetAsync();
+        Task<TUpsertResult> UpsertAsync(TUpsert item);
     }
 }

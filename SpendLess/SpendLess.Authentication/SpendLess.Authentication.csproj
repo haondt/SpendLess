@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SpendLess.Domain\SpendLess.Domain.csproj" />
+    <ProjectReference Include="..\SpendLess.Core\SpendLess.Core.csproj" />
     <ProjectReference Include="..\SpendLess.Storage\SpendLess.Storage.csproj" />
   </ItemGroup>
 

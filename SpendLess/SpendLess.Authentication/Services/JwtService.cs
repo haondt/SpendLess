@@ -10,7 +10,7 @@ using SpendLess.Authentication.Settings;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.Extensions.Options;
-using SpendLess.Domain.Abstractions;
+using SpendLess.Core.Abstractions;
 
 namespace SpendLess.Authentication.Services
 {

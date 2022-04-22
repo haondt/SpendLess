@@ -6,6 +6,10 @@ import { ImportSettingsConfigurationDialogComponent } from '../import-settings-c
 import { MatDialog } from '@angular/material/dialog';
 import { ImportSettingsModel } from '../models/data/ImportSettings';
 import { DatapointMappingsConfigurationDialogComponent } from '../datapoint-mappings-configuration-dialog/datapoint-mappings-configuration-dialog.component';
+import { Observable, of } from 'rxjs';
+import { TransactionDatapointMappingModel } from '../models/data/TransactionDatapointMapping';
+import { forkJoin } from 'rxjs';
+import { GeneratorService } from '../services/generator.service';
 
 @Component({
   selector: 'app-accounts',
@@ -19,8 +23,9 @@ export class AccountsComponent implements OnInit {
   waiting: boolean = false;
   collapsed_accounts: Set<string> = new Set<string>();
   accountFormGroups: FormGroup[] = [];
+  modifiedDatapointMappings: {[key: string]: TransactionDatapointMappingModel[]} = {};
 
-  constructor(private accountsService: AccountsService, private dialog: MatDialog) { }
+  constructor(private accountsService: AccountsService, private dialog: MatDialog, private generator: GeneratorService) { }
 
   ngOnInit(): void {
     this.waiting = true;
@@ -63,6 +68,7 @@ export class AccountsComponent implements OnInit {
         this.dirty = false;
         this.accounts = a;
         this.old_accounts = JSON.stringify(a);
+        this.modifiedDatapointMappings = {};
         this.updateCollapsedAccounts();
         this.generateFormGroups();
         this.waiting = false;
@@ -73,14 +79,31 @@ export class AccountsComponent implements OnInit {
   setAccounts() {
     this.waiting = true;
     this.applyFormGroups();
+    for (let a of this.accounts){
+      a.traceId = a._temporaryId;
+    }
     this.accountsService.set(this.accounts).subscribe({
       next: a => {
-        this.dirty = false;
-        this.accounts = a;
-        this.old_accounts = JSON.stringify(a);
-        this.updateCollapsedAccounts();
-        this.generateFormGroups();
-        this.waiting = false;
+        let updateMappings$ = [];
+        for (let _a of a){
+          if (this.modifiedDatapointMappings[_a.id]) {
+            updateMappings$.push(this.accountsService.setMappings(_a.id, this.modifiedDatapointMappings[_a.id]));
+          } else if (this.modifiedDatapointMappings[_a.traceId]) {
+            updateMappings$.push(this.accountsService.setMappings(_a.id, this.modifiedDatapointMappings[_a.traceId]));
+          }
+        }
+
+        (updateMappings$.length ?  forkJoin(updateMappings$) : of([])).subscribe({
+          next: m => {
+            this.dirty = false;
+            this.accounts = a;
+            this.old_accounts = JSON.stringify(a);
+            this.modifiedDatapointMappings = {};
+            this.updateCollapsedAccounts();
+            this.generateFormGroups();
+            this.waiting = false;
+          }
+        })
       }
     });
   }
@@ -98,6 +121,7 @@ export class AccountsComponent implements OnInit {
 
   resetAccounts() {
     this.accounts = JSON.parse(this.old_accounts);
+    this.modifiedDatapointMappings = {};
     this.generateFormGroups();
     this.dirty = false;
   }
@@ -108,7 +132,10 @@ export class AccountsComponent implements OnInit {
 
   addAccount() {
     this.touch();
-    this.accounts.unshift(new AccountModel());
+    let newAccount = new AccountModel();
+    newAccount._temporaryId = this.generator.newGuid();
+    console.log(newAccount._temporaryId);
+    this.accounts.unshift(newAccount);
     let formGroup = new FormGroup({
         name: new FormControl('', [Validators.required]),
         balance: new FormControl(0)
@@ -119,6 +146,7 @@ export class AccountsComponent implements OnInit {
 
   remove(account: AccountModel) {
     this.touch();
+    delete this.modifiedDatapointMappings[account.id ?? account._temporaryId];
     let i = this.accounts.indexOf(account);
     this.accounts.splice(i, 1);
     this.accountFormGroups.splice(i, 1);
@@ -141,7 +169,7 @@ export class AccountsComponent implements OnInit {
     }
 
     let dialogRef = this.dialog.open(ImportSettingsConfigurationDialogComponent, {
-      data : {importSettings: importSettings},
+      data: {importSettings: importSettings},
       maxWidth: "100vw"
     });
 
@@ -154,17 +182,32 @@ export class AccountsComponent implements OnInit {
   }
 
   openTransactionDatapointMappingConfigurationDialog(account: AccountModel){
-    let data = {datapointMappings: [], newCategories: [], newVendors: [] };
-    let dialogRef = this.dialog.open(DatapointMappingsConfigurationDialogComponent, {
-      data : data,
-      maxWidth: "100vw"
-    });
+    let obs: Observable<TransactionDatapointMappingModel[]> = of([]);
+    if (account.id){
+      if (this.modifiedDatapointMappings[account.id]) {
+        obs = of(JSON.parse(JSON.stringify(this.modifiedDatapointMappings[account.id])));
+      } else {
+        obs = this.accountsService.getMappings(account.id);
+      }
+    } else if (account._temporaryId) {
+      if (this.modifiedDatapointMappings[account._temporaryId]) {
+        obs = of(JSON.parse(JSON.stringify(this.modifiedDatapointMappings[account._temporaryId])));
+      }
+    }
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result){
-        // create new categories/vendors
-        // replace ids in mappings with those returned by server for categories/vendors
-        this.touch();
+    obs.subscribe({
+      next: m => {
+        let dialogRef = this.dialog.open(DatapointMappingsConfigurationDialogComponent, {
+          data: {datapointMappings: m},
+          maxWidth: "100vw"
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+          if (result){
+            this.modifiedDatapointMappings[account.id ?? account._temporaryId] = result;
+            this.touch();
+          }
+        });
       }
     });
   }

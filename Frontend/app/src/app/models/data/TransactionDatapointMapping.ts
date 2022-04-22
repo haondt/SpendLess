@@ -7,7 +7,6 @@ export class TransactionDatapointMappingModel {
 
     detectorColumn: number | undefined;
     detectorOperation: number = DetectorOperations['isNotEmpty'].id;
-    detectorRegularExpression: string = "";
     detectorComparison: number = DetectorComparisons['e'].id;
     detectorStringValue: string = "";
     detectorValueIsNumeric: boolean = false;
@@ -21,4 +20,6 @@ export class TransactionDatapointMappingModel {
     parserDateTimeValue: string | undefined;
     parserBoolValue: boolean = false;
 
+    _summary: string;
 }
+

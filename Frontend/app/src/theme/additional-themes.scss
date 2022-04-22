@@ -5,9 +5,11 @@
 $themes: (
     default: (
         affirmative: palettes.$secondary-default,
+        secret: palettes.$pink,
     ),
     dark-gold: (
         affirmative: palettes.$mild-green,
+        secret: palettes.$electric-blue,
     )
 );
 

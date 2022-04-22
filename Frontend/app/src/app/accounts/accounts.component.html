@@ -46,27 +46,16 @@
                     </div>
                     <div class="form-row simple-row">
                         <mat-icon>table_rows</mat-icon>
-                        <span class="span-button" (click)="openImportSettingsConfigurationDialog(account)">Edit import settings</span>
+                        <span class="span-button" (click)="openImportSettingsConfigurationDialog(account)">Edit import
+                            settings</span>
                     </div>
 
                     <mat-divider></mat-divider>
-                    <div class="form-row">
-                        <table>
-                            <tr>
-                                <td class="icon-cell">
-                                    <mat-icon>settings_input_component</mat-icon>
-                                </td>
-                                <td>
-                                    <span>{{ account.transactionDatapointMappings.length }} transaction datapoint mappings.</span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td>
-                                    <span class="span-button" (click)="openTransactionDatapointMappingConfigurationDialog(account)">Click to configure</span>
-                                </td>
-                            </tr>
-                        </table>
+                    <div class="form-row simple-row">
+                        <mat-icon>settings_input_component</mat-icon>
+                        <span class="span-button"
+                            (click)="openTransactionDatapointMappingConfigurationDialog(account)">Edit transaction
+                            datapoint mappings</span>
                     </div>
                 </form>
                 <mat-action-row>

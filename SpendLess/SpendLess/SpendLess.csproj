@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
@@ -21,7 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SpendLess.Authentication\SpendLess.Authentication.csproj" />
-    <ProjectReference Include="..\SpendLess.Domain\SpendLess.Domain.csproj" />
+    <ProjectReference Include="..\SpendLess.Core\SpendLess.Core.csproj" />
     <ProjectReference Include="..\SpendLess.Storage\SpendLess.Storage.csproj" />
   </ItemGroup>
 

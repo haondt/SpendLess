@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SpendLess.Authentication.Abstractions;
-using SpendLess.Domain.Models;
+using SpendLess.Core.Models;
 using SpendLess.Authentication.Services;
 using SpendLess.Authentication.Settings;
 using SpendLess.Storage.Extensions;

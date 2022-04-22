@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SpendLess.Storage.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -80,5 +81,74 @@ namespace SpendLess.Storage
             return Task.FromResult(false);
         }
 
+        public Task<Dictionary<TKey, TEntity>> GetManyAsync(IEnumerable<QueryParameter> parameters)
+        {
+
+            var data = ReadData();
+            var result = new Dictionary<TKey, TEntity>();
+            foreach(var entry in data)
+            {
+                foreach(var parameter in parameters)
+                {
+
+                    if(entry.Value.TryGetProperty(parameter.PropertyKey, out var value))
+                    {
+                        if (parameter.PerformComparison(value))
+                        {
+                            result[entry.Key] = entry.Value;
+                        }
+                    }
+                }
+            }
+            return Task.FromResult(result);
+        }
+
+        public Task<IEnumerable<TKey>> CreateManyAsync(IEnumerable<TEntity> entities)
+        {
+            var data = ReadData();
+            var keyedEntities = entities.ToDictionary(e => _keyGenerator(), e => e);
+            foreach(var kvp in keyedEntities)
+                data[kvp.Key] = kvp.Value;
+            WriteData(data);
+            return Task.FromResult(keyedEntities.Select(kvp => kvp.Key));
+        }
+
+        public Task<IEnumerable<bool>> UpdateManyAsync(Dictionary<TKey, TEntity> entities)
+        {
+            var data = ReadData();
+            var result = entities.Select(e =>
+            {
+                if (data.ContainsKey(e.Key))
+                {
+                    data[e.Key] = e.Value;
+                    return true;
+                }
+                return false;
+            });
+            WriteData(data);
+            return Task.FromResult(result);
+        }
+
+        public Task<IEnumerable<bool>> DeleteManyAsync(IEnumerable<TKey> keys)
+        {
+            var data = ReadData();
+            var result = keys.Select(k => data.Remove(k));
+            WriteData(data);
+            return Task.FromResult(result);
+        }
+
+        public async Task<int> DeleteManyAsync(IEnumerable<QueryParameter> parameters)
+        {
+            var data = ReadData();
+            var entries = await GetManyAsync(parameters);
+            var count = 0;
+            foreach(var entry in entries)
+            {
+                if(data.Remove(entry.Key))
+                    count ++;
+            }
+            WriteData(data);
+            return count;
+        }
     }
 }
