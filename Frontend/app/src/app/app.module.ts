@@ -40,6 +40,14 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { TransactionImportComponent } from './transactions/transaction-import/transaction-import.component';
+import { TransactionsComponent } from './transactions/transactions.component';
+import { TransactionsEditComponent } from './transactions/transactions-edit/transactions-edit.component';
+import { TransactionsAddComponent } from './transactions/transactions-add/transactions-add.component';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
 
 import 'prismjs/components/prism-css';
 import 'prismjs/components/prism-javascript';
@@ -60,6 +68,10 @@ import 'prismjs/components/prism-regex';
     MaterialInputComponent,
     DatapointMappingsConfigurationDialogComponent,
     RowSelectorDialogComponent,
+    TransactionImportComponent,
+    TransactionsComponent,
+    TransactionsEditComponent,
+    TransactionsAddComponent,
   ],
   imports: [
     BrowserModule,
@@ -90,7 +102,11 @@ import 'prismjs/components/prism-regex';
     MatAutocompleteModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatPaginatorModule,
+    MatChipsModule,
+    MatTableModule,
+    MatTooltipModule
   ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]

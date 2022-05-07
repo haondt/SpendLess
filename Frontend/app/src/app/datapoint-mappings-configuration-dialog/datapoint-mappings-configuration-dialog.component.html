@@ -41,9 +41,9 @@
             <div class="tab">
                             <div class="form-row">
                             <span class="spacer"></span>
-                            <button mat-stroked-button color="secret" (click)="viewJson()">View Json</button>
+                            <button mat-stroked-button color="secret" *ngIf="devMode" (click)="viewJson()">View Json</button>
                             <button mat-stroked-button color="warn" (click)="deleteMapping()">Delete Mapping</button>
-                            <button mat-stroked-button (click)="discardMappingChanges()">Discard Changes</button>
+                            <button mat-stroked-button color="warn" (click)="discardMappingChanges()">Discard Changes</button>
                             <button mat-stroked-button color="affirmative" (click)="saveMappingChanges()">Save Mapping</button>
                             </div>
                 <div class="mapping-editor">

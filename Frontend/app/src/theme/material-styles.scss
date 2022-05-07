@@ -32,8 +32,6 @@
     color: $warn;
   }
 
-  .color
-
   .background.primary {
     background-color: $primary;
     color: $primary-contrast;
@@ -241,5 +239,21 @@
   .mat-snack-bar-container {
     background-color: $primary;
     color: $primary-contrast;
+  }
+
+  /* paginator */
+  .mat-paginator {
+    background: $primary;
+  }
+
+  /* table */
+  .mat-table {
+    background: $primary;
+  }
+
+  /* tooltip */
+  .mat-tooltip {
+      background-color: $primary-lighter;
+      color: $primary-contrast;
   }
 }

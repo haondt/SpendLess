@@ -12,6 +12,14 @@
     $affirmative-contrast: mat.get-color-from-palette($aff, default-contrast);
     $secret: mat.get-color-from-palette($s);
 
+    .color.affirmative {
+        color: $affirmative;
+    }
+
+    .color.secret {
+        color: $secret;
+    }
+
     .background.affirmative {
         background-color: $affirmative;
         color: $affirmative-contrast;

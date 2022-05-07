@@ -26,7 +26,7 @@ namespace SpendLess.Configuration
         public string ParserStringValue { get; set; }
         public int ParserColumn { get; set; }
         public bool ParserInvertValue { get; set; }
-        public string ParserDateTimeValue { get; set; }
+        public DateTime ParserDateTimeValue { get; set; }
         public bool ParserBoolValue { get; set; }
     }
 }

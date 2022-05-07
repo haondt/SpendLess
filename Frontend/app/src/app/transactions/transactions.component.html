@@ -1,0 +1,37 @@
+<div class="outer">
+    <div class="inner">
+        <div class="header">
+            <h1>Manage Transactions</h1>
+        </div>
+        <mat-card>
+            <span class="header-spacer"></span>
+            <mat-form-field appearance="standard" class="account-selector">
+                <mat-select placeholder="Select account" >
+                    <mat-option *ngFor="let account of accounts" [value]="account">
+                        {{ account.name }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+
+            <button type="button" color="accent" class="header-button" mat-raised-button>
+                <span>Edit Transactions</span>
+            </button>
+            <button type="button" color="accent" class="header-button" mat-raised-button>
+                <span>Add Transactions</span>
+            </button>
+            <button type="button" color="accent" class="header-button" mat-raised-button>
+                <span>Import Transactions</span>
+            </button>
+
+            <button *ngIf="dirty" type="button" (click)="discard()" color="warn" class="header-button" mat-button>
+                <span>Discard Changes</span>
+            </button>
+            <button *ngIf="dirty" (click)="save()" color="affirmative" type="button"
+                class="header-button affirmative" mat-button>
+                <span>Save Changes</span>
+            </button>
+        </mat-card>
+        <app-transactions-add [(state)]="state"></app-transactions-add>
+    </div>
+</div>

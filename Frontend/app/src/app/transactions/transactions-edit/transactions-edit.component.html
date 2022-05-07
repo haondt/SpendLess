@@ -1,0 +1,44 @@
+        <mat-card>
+            <div>
+                <mat-checkbox></mat-checkbox>
+                <span>Filters</span>
+                <mat-chip-list>
+                    <mat-chip>A filter</mat-chip>
+                    <mat-chip>Another filter</mat-chip>
+                </mat-chip-list>
+                <mat-select>
+                    <mat-option>Datapoint</mat-option>
+                </mat-select>
+                <input>
+            <button type="button"  mat-button>
+                <span>Add filter</span>
+            </button>
+            </div>
+            <!--
+            <div class="content-row">
+                <button color="accent" (click)="addTransaction()" mat-raised-button>
+                    New Transaction
+                </button>
+            </div>
+            <div class="content-row">
+            <table>
+                <tr>
+                    <th *ngIf="devMode" class="color secret"> ID </th>
+                    <th>Date</th>
+                    <th>Description</th>
+                </tr>
+                <tr *ngFor="let element of data">
+                    <td *ngIf="devMode" class="color secret">{{ element.id }}</td>
+                    <td>{{ element.date }}</td>
+                    <td>{{ element.description }}</td>
+                </tr>
+            </table>
+            </div>
+            <div class="content-row">
+            <mat-paginator [pageSizeOptions]="[10,25,50,100]"></mat-paginator>
+            </div>
+        -->
+        </mat-card>
+        <mat-card>
+            <mat-paginator></mat-paginator>
+        </mat-card>

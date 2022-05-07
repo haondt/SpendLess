@@ -64,7 +64,7 @@ export class DatapointMappingsConfigurationDialogComponent implements OnInit {
 
         userService.getUserInfo().subscribe({
             next: ui => this.devMode = ui.siteData.isDeveloper
-        })
+        });
 
 
         userService.getCategories().subscribe({

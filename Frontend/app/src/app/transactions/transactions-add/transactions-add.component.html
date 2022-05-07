@@ -1,0 +1,52 @@
+        <mat-card>
+            <div class="content-row">
+                <span class="spacer"></span>
+                <button color="accent" (click)="addTransaction()" mat-stroked-button>
+                    New Transaction
+                </button>
+                <button color="warn" (click)="deleteSelected()" mat-stroked-button>
+                    Delete Selected
+                </button>
+            </div>
+            <div class="content-row">
+            <table>
+                <tr>
+                    <th>
+                            <mat-checkbox [(ngModel)]="selectAllCheckboxValue" (change)="onSelectAllCheckboxChanged()"></mat-checkbox>
+                    </th>
+                    <th>Date</th>
+                    <th>Description</th>
+                </tr>
+                <tr *ngFor="let element of paginatedData">
+                    <td>
+                        <mat-checkbox [(ngModel)]="element._selected" (change)="onSelectedChanged()"></mat-checkbox>
+                    </td>
+                    <td>
+                        <mat-form-field>
+                            <input matInput [matDatepicker]="datePicker"
+                                placeholder="Date" [(ngModel)]="element.date">
+                            <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
+                            <mat-datepicker #datePicker></mat-datepicker>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field appearance="standard">
+                            <input matInput type="text" placeholder="Description" [(ngModel)]="element.description">
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <button type="button" mat-icon-button (click)="removeTransaction(element)">
+                            <mat-icon class="color warn">delete</mat-icon>
+                        </button>
+                    </td>
+                    <td>
+                        <mat-icon matTooltip="wip but this will be the warning text" class="color warn">warning</mat-icon>
+                    </td>
+                </tr>
+            </table>
+            </div>
+            <div class="content-row">
+                            <span class="spacer"></span>
+            <mat-paginator [pageSizeOptions]="pageSizes" [length]="data.length" (page)="paginate()"></mat-paginator>
+            </div>
+        </mat-card>
