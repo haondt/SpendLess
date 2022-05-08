@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SpendLess.Core.Dtos
+namespace SpendLess.Core.Dtos.Transactions
 {
     public class TransactionDto
     {

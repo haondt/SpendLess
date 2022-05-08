@@ -8,6 +8,8 @@
                     Delete Selected
                 </button>
             </div>
+        </mat-card>
+        <mat-card>
             <div class="content-row">
             <table>
                 <tr>
@@ -16,6 +18,10 @@
                     </th>
                     <th>Date</th>
                     <th>Description</th>
+                    <th>Value</th>
+                    <th>Vendor</th>
+                    <th>Category</th>
+                    <th>Recurring</th>
                 </tr>
                 <tr *ngFor="let element of paginatedData">
                     <td>
@@ -35,12 +41,38 @@
                         </mat-form-field>
                     </td>
                     <td>
+                        <mat-form-field appearance="standard">
+                            <material-input type="currency" [(ngModel)]="element.value"></material-input>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field appearance="standard">
+                            <input type="text" matInput
+                                [matAutocomplete]="vendorAutocomplete" [(ngModel)]="element.vendor">
+                            <mat-autocomplete #vendorAutocomplete="matAutocomplete">
+                                <mat-option *ngFor="let item of getVendorOptions(element)" [value]="item">{{ item }}</mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field appearance="standard">
+                            <input type="text" matInput
+                                [matAutocomplete]="categoryAutocomplete" [(ngModel)]="element.category">
+                            <mat-autocomplete #categoryAutocomplete="matAutocomplete">
+                                <mat-option *ngFor="let item of getCategoryOptions(element)" [value]="item">{{ item }}</mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-checkbox [(ngModel)]="element.recurring"></mat-checkbox>
+                    </td>
+                    <td>
                         <button type="button" mat-icon-button (click)="removeTransaction(element)">
                             <mat-icon class="color warn">delete</mat-icon>
                         </button>
                     </td>
                     <td>
-                        <mat-icon matTooltip="wip but this will be the warning text" class="color warn">warning</mat-icon>
+                        <mat-icon [matTooltip]="getErrors(element)" *ngIf="getErrors(element)" class="color warn">warning</mat-icon>
                     </td>
                 </tr>
             </table>

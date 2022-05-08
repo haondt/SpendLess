@@ -6,7 +6,7 @@
         <mat-card>
             <span class="header-spacer"></span>
             <mat-form-field appearance="standard" class="account-selector">
-                <mat-select placeholder="Select account" >
+                <mat-select placeholder="Select account" [(ngModel)]="selectedAccount" >
                     <mat-option *ngFor="let account of accounts" [value]="account">
                         {{ account.name }}
                     </mat-option>
@@ -14,24 +14,31 @@
             </mat-form-field>
 
 
-            <button type="button" color="accent" class="header-button" mat-raised-button>
+            <button type="button" color="accent" class="header-button"
+                [disabled]="!selectedAccount"
+                *ngIf="mode===modes.none" (click)="mode=modes.edit" mat-raised-button>
                 <span>Edit Transactions</span>
             </button>
-            <button type="button" color="accent" class="header-button" mat-raised-button>
+            <button type="button" color="accent" class="header-button"
+                [disabled]="!selectedAccount"
+                *ngIf="mode===modes.none" (click)="mode=modes.add" mat-raised-button>
                 <span>Add Transactions</span>
             </button>
-            <button type="button" color="accent" class="header-button" mat-raised-button>
+            <button type="button" color="accent" class="header-button"
+                [disabled]="!selectedAccount"
+                *ngIf="mode===modes.none" (click)="mode=modes.import" mat-raised-button>
                 <span>Import Transactions</span>
             </button>
 
-            <button *ngIf="dirty" type="button" (click)="discard()" color="warn" class="header-button" mat-button>
+            <button type="button" (click)="discard()" color="warn"
+                *ngIf="mode!=modes.none" class="header-button" mat-button>
                 <span>Discard Changes</span>
             </button>
-            <button *ngIf="dirty" (click)="save()" color="affirmative" type="button"
+            <button *ngIf="mode!=modes.none" (click)="save()" color="affirmative" type="button"
                 class="header-button affirmative" mat-button>
                 <span>Save Changes</span>
             </button>
         </mat-card>
-        <app-transactions-add [(state)]="state"></app-transactions-add>
+        <app-transactions-add *ngIf="mode===modes.add"></app-transactions-add>
     </div>
 </div>

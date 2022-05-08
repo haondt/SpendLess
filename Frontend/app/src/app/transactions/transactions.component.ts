@@ -1,8 +1,10 @@
-import { Component } from "@angular/core";
+import { Component, ViewChild } from "@angular/core";
+import { startWith } from "rxjs";
 import { AccountModel } from "../models/data/Account";
 import { TransactionModel } from "../models/data/Transaction";
 import { AccountsService } from "../services/api/accounts.service";
-import { TransactionsModificationState } from "./transactions-modification-state";
+import { TransactionsService } from "../services/api/transactions.service";
+import { TransactionsAddComponent } from "./transactions-add/transactions-add.component";
 
 @Component({
     selector: "app-transactions",
@@ -12,27 +14,47 @@ import { TransactionsModificationState } from "./transactions-modification-state
 export class TransactionsComponent {
 
   accounts: AccountModel[] = [];
-  dirty: boolean = true;
-  state: TransactionsModificationState;
-  oldState: string;
+  selectedAccount: AccountModel;
+  mode: string;
+  modes: Modes = new Modes();
 
-  constructor(private accountsService: AccountsService) {
+  @ViewChild(TransactionsAddComponent)
+  addComponent: TransactionsAddComponent;
+
+  constructor(private accountsService: AccountsService, private transactionsService: TransactionsService) {
         this.accountsService.get().subscribe({
             next: a => this.accounts = a
         });
-
-        this.state = new TransactionsModificationState();
-        this.state.newTransactions.push(new TransactionModel());
-        this.state.newTransactions[0].description = 'banananas';
-        this.oldState = JSON.stringify(this.state);
+        this.mode = this.modes.none;
   }
 
   discard() {
-    this.state = JSON.parse(this.oldState);
+    switch(this.mode){
+      case this.modes.add:
+        this.addComponent.data = [];
+        break;
+    }
+
+    this.mode = this.modes.none;
   }
 
   save() {
-    this.oldState = JSON.stringify(this.state);
+    if (this.selectedAccount){
+      switch(this.mode){
+        case this.modes.add:
+          this.transactionsService.create(this.selectedAccount.id, this.addComponent.data || [])
+          break;
+      }
+    }
+
+    this.mode = this.modes.none;
   }
 
+}
+
+class Modes {
+  none: string = "none";
+  add: string = "add";
+  edit: string = "edit";
+  import: string = "import";
 }
